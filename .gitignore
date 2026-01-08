@@ -1,0 +1,9 @@
+# Project spec (for development only, not for end users)
+mypowershell-spec.md
+
+# Temporary files
+*.tmp
+*.log
+
+# PowerShell cache
+*.ps1xml

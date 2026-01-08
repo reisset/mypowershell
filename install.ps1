@@ -348,13 +348,13 @@ Write-Host ""
 Write-Status "Optional tools enhance your experience but aren't required." -Type Info
 
 # Yazi - Modern terminal file manager
-if (Confirm-No "Install yazi file manager? (Modern TUI file browser)") {
+if (Confirm "Install yazi file manager? (Modern TUI file browser)" -DefaultYes $false) {
     Write-Status "Installing yazi via scoop..." -Type Info
     Install-ScoopPackage "yazi"
 }
 
 # Tealdeer - Fast tldr client (command examples)
-if (Confirm-No "Install tealdeer? (Quick command examples via 'tldr')") {
+if (Confirm "Install tealdeer? (Quick command examples via 'tldr')" -DefaultYes $false) {
     Write-Status "Installing tealdeer via scoop..." -Type Info
     Install-ScoopPackage "tealdeer"
 
