@@ -1,6 +1,6 @@
 # scripts/aliases.ps1
 # MyPowerShell Aliases - Modern CLI tool shortcuts
-# Version: 1.1.0 (Performance Optimized - uses cached tool availability)
+# Version: 1.2.0 (Advanced Performance Optimizations)
 
 # ============================================================================
 # MODERN TOOL ALIASES (Learning-First Approach)
@@ -24,7 +24,8 @@ if ($ToolsAvailable.eza) {
     # Use: lsg "*.txt" instead of: eza *.txt (which fails)
     function lsg {
         param([string]$Pattern = "*")
-        Get-ChildItem -Name $Pattern | ForEach-Object { eza --icons $_ }
+        $files = Get-ChildItem -Name $Pattern
+        if ($files) { eza --icons @files }
     }
 }
 
@@ -98,7 +99,7 @@ function tools {
         # Use bat if available, otherwise fallback to Get-Content
         if ($ToolsAvailable.bat) {
             bat $toolsPath
-        } elseif (Get-Command glow -ErrorAction SilentlyContinue) {
+        } elseif ($ToolsAvailable.glow) {
             glow $toolsPath
         } else {
             Get-Content $toolsPath
