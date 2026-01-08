@@ -1,7 +1,7 @@
 # MyPowerShell Uninstaller
 # Removes MyPowerShell configuration and restores default PowerShell environment
 # Inspired by MyBash uninstall patterns
-# Version: 1.1.0 (Enhanced: Automatic tool uninstallation + session reset)
+# Version: 1.1.1 (Fixed: Profile hook regex pattern + cache error handling)
 
 #Requires -Version 5.1
 
@@ -34,7 +34,7 @@ function Confirm {
 function Write-Banner {
     Write-Host ""
     Write-Host "=============================================================================" -ForegroundColor Cyan
-    Write-Host "  MyPowerShell Uninstaller v1.1.0" -ForegroundColor Cyan
+    Write-Host "  MyPowerShell Uninstaller v1.1.1" -ForegroundColor Cyan
     Write-Host "  Restores native PowerShell environment" -ForegroundColor Cyan
     Write-Host "=============================================================================" -ForegroundColor Cyan
     Write-Host ""
@@ -70,7 +70,8 @@ if (-not (Test-Path $PROFILE)) {
 
             # Remove the MyPowerShell block
             # Pattern: Remove from "# ===...MyPowerShell" through the ". " line
-            $pattern = '(?m)^# ={70,}\r?\n^# MyPowerShell Configuration\r?\n^# ={70,}\r?\n^\. .+scripts\\profile\.ps1.*\r?\n?'
+            # Updated regex to handle optional comment lines between header and source line
+            $pattern = '(?ms)^# ={70,}\s*\r?\n# MyPowerShell Configuration\s*\r?\n# ={70,}\s*\r?\n(?:#[^\r\n]*\r?\n)*\. [^\r\n]*profile\.ps1[^\r\n]*\r?\n?'
             $newContent = $profileContent -replace $pattern, ''
 
             # Write back to profile
