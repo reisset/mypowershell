@@ -7,6 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0-uninstall] - 2026-01-08
+
+### Added - Uninstaller Script
+- **uninstall.ps1**: Comprehensive uninstaller for complete cleanup
+  - Step-by-step uninstallation with default-NO confirmations (safe by default)
+  - Removes PowerShell profile hook with timestamped backup
+  - Removes Starship configuration (`~\.config\starship.toml`)
+  - Removes cached init scripts from `$env:TEMP`
+  - Removes git delta configuration (if present)
+  - Optional Windows Terminal cleanup (Tokyo Night theme removal)
+  - **NEW: Automatic tool uninstallation** (prompted per category)
+    - Core tools: starship, zoxide, fzf, eza, bat, fd, ripgrep
+    - Dev tools: lazygit, delta, dust
+    - Optional tools: yazi, tealdeer
+    - PSFzf PowerShell module
+    - Detects winget vs scoop and uses correct uninstaller
+  - **NEW: Immediate session reset** (no restart needed)
+    - Resets prompt to default PowerShell (`PS C:\>`)
+    - Disables PSReadLine ListView predictions
+    - Clears MyPowerShell environment variables
+  - Intentionally preserves JetBrainsMono Nerd Font (user preference)
+  - MyBash-inspired design: color-coded logging, step-by-step process
+
+### Changed
+- README.md updated to mention uninstaller availability
+- Documentation reflects complete installation/uninstallation lifecycle
+
 ## [1.2.1] - 2026-01-08
 
 ### Fixed
