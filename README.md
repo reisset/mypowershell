@@ -38,6 +38,23 @@ This installer:
 
 For detailed security information, see [SECURITY.md](SECURITY.md).
 
+## Uninstalling
+
+To completely remove MyPowerShell and restore native PowerShell:
+
+```powershell
+.\uninstall.ps1
+```
+
+The uninstaller will:
+- Remove the PowerShell profile hook (with backup)
+- Optionally remove Starship config, cached scripts, and Windows Terminal theme
+- Optionally uninstall all tools (starship, zoxide, eza, bat, etc.)
+- Immediately reset your current session to defaults
+- **Preserves JetBrainsMono Nerd Font** (it's nice to keep)
+
+All steps are prompted with safe defaults (No). Your session resets instantly - no restart needed.
+
 ## Tweaking Configs
 
 - **Profile:** `scripts\profile.ps1` - Main PowerShell profile
