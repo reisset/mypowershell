@@ -81,3 +81,16 @@ if (Get-Command fzf -ErrorAction SilentlyContinue) {
         }
     }
 }
+
+# ============================================================================
+# 5. Welcome Banner (once per session)
+# ============================================================================
+if ($Host.UI.RawUI -and -not $env:MYPOWERSHELL_WELCOME_SHOWN) {
+    $asciiPath = Join-Path $MyPowerShellRoot "asciiart.txt"
+    if (Test-Path $asciiPath) {
+        Get-Content $asciiPath | Write-Host -ForegroundColor Cyan
+        Write-Host ""
+        Write-Host "Type 'tools' for quick reference" -ForegroundColor DarkGray
+    }
+    $env:MYPOWERSHELL_WELCOME_SHOWN = "1"
+}

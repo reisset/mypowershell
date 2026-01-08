@@ -3,7 +3,7 @@
         "defaults": {
             "font": {
                 "face": "JetBrainsMono Nerd Font",
-                "size": 12
+                "size": 15
             },
             "colorScheme": "Tokyo Night",
             "padding": "10"

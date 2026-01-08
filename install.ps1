@@ -387,7 +387,7 @@ if ($wtSettingsPath) {
             # Add Tokyo Night scheme if it doesn't exist
             if (-not ($wtSettings.schemes | Where-Object { $_.name -eq "Tokyo Night" })) {
                 if (-not $wtSettings.schemes) {
-                    $wtSettings | Add-Member -MemberType NoteProperty -Name "schemes" -Value @()
+                    $wtSettings | Add-Member -MemberType NoteProperty -Name "schemes" -Value @() -Force
                 }
                 $wtSettings.schemes += $themeConfig.schemes[0]
                 Write-Status "Added Tokyo Night color scheme" -Type Success
@@ -397,7 +397,7 @@ if ($wtSettingsPath) {
 
             # Update default profile settings
             if (-not $wtSettings.profiles.defaults) {
-                $wtSettings.profiles | Add-Member -MemberType NoteProperty -Name "defaults" -Value @{}
+                $wtSettings.profiles | Add-Member -MemberType NoteProperty -Name "defaults" -Value @{} -Force
             }
 
             # Set color scheme
@@ -405,10 +405,10 @@ if ($wtSettingsPath) {
 
             # Set font
             if (-not $wtSettings.profiles.defaults.font) {
-                $wtSettings.profiles.defaults | Add-Member -MemberType NoteProperty -Name "font" -Value @{}
+                $wtSettings.profiles.defaults | Add-Member -MemberType NoteProperty -Name "font" -Value @{} -Force
             }
             $wtSettings.profiles.defaults.font | Add-Member -MemberType NoteProperty -Name "face" -Value "JetBrainsMono Nerd Font" -Force
-            $wtSettings.profiles.defaults.font | Add-Member -MemberType NoteProperty -Name "size" -Value 12 -Force
+            $wtSettings.profiles.defaults.font | Add-Member -MemberType NoteProperty -Name "size" -Value 15 -Force
 
             # Set padding
             $wtSettings.profiles.defaults | Add-Member -MemberType NoteProperty -Name "padding" -Value "10" -Force
