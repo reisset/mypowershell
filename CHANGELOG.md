@@ -7,21 +7,52 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Planned for Phase 3
-- Development tools (lazygit, delta, dust)
-- Windows Terminal Tokyo Night theme integration
-- Terminal-Icons PowerShell module
-- Automated Nerd Font installation via scoop
-- Git delta configuration
-
 ### Planned for Phase 4
 - TOOLS.md quick reference documentation
 - README.md with installation instructions
 - LICENSE file (MIT)
 - SECURITY.md
 - Welcome message in profile
-- Yazi file manager wrapper function
+- Yazi file manager wrapper function (`y`)
 - Optional tools (yazi, tealdeer)
+
+## [0.3.0] - 2026-01-08
+
+### Added - Phase 3: Development Tools & Integration
+- **Development Tools**
+  - lazygit for interactive Git TUI (`lg` command)
+  - delta for beautiful git diffs with syntax highlighting
+  - dust for visual disk usage analysis
+
+- **Visual Enhancements**
+  - Windows Terminal Tokyo Night theme integration
+  - Automated JetBrainsMono Nerd Font installation via scoop
+  - Tokyo Night color scheme for Windows Terminal settings
+
+- **Configuration Files**
+  - `configs/delta.gitconfig` - Git delta configuration (copied from MyBash)
+  - `configs/windows-terminal.json` - Tokyo Night theme fragment
+
+- **Installer Enhancements** (`install.ps1`)
+  - Tier 2 tool installation (lazygit, delta, dust)
+  - Nerd Font installation with scoop nerd-fonts bucket
+  - Windows Terminal settings.json automatic theme injection
+  - Optional git delta configuration (prompted)
+  - Comprehensive completion message with all installed tools
+
+### Changed
+- Updated profile.ps1 to remove Terminal-Icons references (performance optimization)
+- Improved PSFzf lazy-loading for faster shell startup
+- Enhanced installer output with categorized tool listing
+
+### Removed
+- **Terminal-Icons module** - Removed due to ~450ms startup latency impact
+  - Prioritizing performance over visual enhancements
+  - Icons still work via eza and other tools
+
+### Performance
+- Profile load time optimized by removing Terminal-Icons
+- Maintained sub-500ms startup target
 
 ## [0.2.0] - 2026-01-08
 

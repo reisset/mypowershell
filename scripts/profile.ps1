@@ -23,12 +23,17 @@ if (Get-Command starship -ErrorAction SilentlyContinue) {
 # ============================================================================
 # 2. PSReadLine Enhancements (History & Prediction)
 # ============================================================================
-if (Get-Module -ListAvailable -Name PSReadLine) {
+# Only configure PSReadLine in interactive sessions
+if ($Host.UI.RawUI -and (Get-Module -ListAvailable -Name PSReadLine)) {
     Import-Module PSReadLine -ErrorAction SilentlyContinue
 
-    # Predictive IntelliSense from history
-    Set-PSReadLineOption -PredictionSource History -ErrorAction SilentlyContinue
-    Set-PSReadLineOption -PredictionViewStyle ListView -ErrorAction SilentlyContinue
+    # Predictive IntelliSense from history (only if supported)
+    try {
+        Set-PSReadLineOption -PredictionSource History -ErrorAction Stop
+        Set-PSReadLineOption -PredictionViewStyle ListView -ErrorAction Stop
+    } catch {
+        # Prediction not supported in this terminal, skip
+    }
 
     # Emacs-style editing
     Set-PSReadLineOption -EditMode Emacs -ErrorAction SilentlyContinue
@@ -49,22 +54,30 @@ if (Get-Command zoxide -ErrorAction SilentlyContinue) {
 }
 
 # ============================================================================
-# 4. FZF + PSFzf (Fuzzy Finder)
+# 4. FZF + PSFzf (Lazy-loaded on first use for faster startup)
 # ============================================================================
 if (Get-Command fzf -ErrorAction SilentlyContinue) {
-    # Import PSFzf module if available
+    # PSFzf module lazy-loaded only when needed
+    # Use Ctrl+T or Ctrl+R - module loads automatically on first use
     if (Get-Module -ListAvailable -Name PSFzf) {
-        Import-Module PSFzf -ErrorAction SilentlyContinue
+        # Define lazy-loading function
+        function global:Initialize-PSFzf {
+            if (-not (Get-Module PSFzf)) {
+                Import-Module PSFzf -ErrorAction SilentlyContinue
+                Set-PsFzfOption -PSReadlineChordProvider 'Ctrl+t' -ErrorAction SilentlyContinue
+                Set-PsFzfOption -PSReadlineChordReverseHistory 'Ctrl+r' -ErrorAction SilentlyContinue
+            }
+        }
 
-        # Keybindings: Ctrl+R for history, Ctrl+T for file finder
-        Set-PsFzfOption -PSReadlineChordProvider 'Ctrl+t' -ErrorAction SilentlyContinue
-        Set-PsFzfOption -PSReadlineChordReverseHistory 'Ctrl+r' -ErrorAction SilentlyContinue
+        # Set keybindings to trigger lazy-load
+        Set-PSReadLineKeyHandler -Key 'Ctrl+t' -ScriptBlock {
+            Initialize-PSFzf
+            Invoke-FzfTabCompletion
+        }
+
+        Set-PSReadLineKeyHandler -Key 'Ctrl+r' -ScriptBlock {
+            Initialize-PSFzf
+            Invoke-FuzzyHistory
+        }
     }
 }
-
-# ============================================================================
-# 5. Terminal Icons (Phase 3 - will be added later)
-# ============================================================================
-# if (Get-Module -ListAvailable -Name Terminal-Icons) {
-#     Import-Module Terminal-Icons -ErrorAction SilentlyContinue
-# }

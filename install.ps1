@@ -4,9 +4,9 @@
     MyPowerShell Installer - High-performance PowerShell environment for Windows
 .DESCRIPTION
     Installs modern CLI tools and configurations inspired by MyBash for Linux.
-    Phase 2: Core Tools (zoxide, fzf, eza, bat, fd, ripgrep + aliases)
+    Phase 3: Development Tools (lazygit, delta, dust + Windows Terminal theme + Nerd Font)
 .NOTES
-    Version: 1.0.0-phase2
+    Version: 1.0.0-phase3
     No administrator privileges required
 #>
 
@@ -129,7 +129,7 @@ Clear-Host
 Write-Host ""
 Write-Host "╔═══════════════════════════════════════════════════════════════╗" -ForegroundColor Cyan
 Write-Host "║                                                               ║" -ForegroundColor Cyan
-Write-Host "║             MyPowerShell Installer - Phase 2                  ║" -ForegroundColor Cyan
+Write-Host "║             MyPowerShell Installer - Phase 3                  ║" -ForegroundColor Cyan
 Write-Host "║     High-Performance PowerShell Environment for Windows       ║" -ForegroundColor Cyan
 Write-Host "║                                                               ║" -ForegroundColor Cyan
 Write-Host "╚═══════════════════════════════════════════════════════════════╝" -ForegroundColor Cyan
@@ -310,7 +310,151 @@ foreach ($module in $modules) {
 }
 
 # ============================================================================
-# 6. Deploy Configuration Files
+# 6. Install Tier 2 Tools (Development Tools)
+# ============================================================================
+
+Write-Host ""
+Write-Status "Installing Tier 2 tools (development tools)..." -Type Info
+
+# Define Tier 2 tools
+$tier2WingetTools = @(
+    @{Id = "JesseDuffield.Lazygit"; Name = "lazygit"; Description = "Git TUI" }
+)
+
+$tier2ScoopTools = @(
+    @{Name = "delta"; Description = "Git diff viewer" },
+    @{Name = "dust"; Description = "Disk usage analyzer" }
+)
+
+# Install via winget
+if (Test-CommandExists 'winget') {
+    foreach ($tool in $tier2WingetTools) {
+        Install-WingetPackage -Id $tool.Id -CommandName $tool.Name | Out-Null
+    }
+}
+
+# Install via scoop
+if (Test-CommandExists 'scoop') {
+    foreach ($tool in $tier2ScoopTools) {
+        Install-ScoopPackage -Name $tool.Name | Out-Null
+    }
+}
+
+# ============================================================================
+# 7. Install Nerd Font (JetBrainsMono)
+# ============================================================================
+
+Write-Host ""
+if (Confirm "Install JetBrainsMono Nerd Font? (Required for icons)") {
+    if (Test-CommandExists 'scoop') {
+        Write-Status "Adding nerd-fonts bucket to scoop..." -Type Info
+        scoop bucket add nerd-fonts 2>&1 | Out-Null
+
+        Write-Status "Installing JetBrainsMono Nerd Font..." -Type Info
+        scoop install JetBrainsMono-NF 2>&1 | Out-Null
+
+        if ($LASTEXITCODE -eq 0) {
+            Write-Status "JetBrainsMono Nerd Font installed successfully" -Type Success
+            Write-Status "Note: You may need to restart Windows Terminal to see the font" -Type Info
+        } else {
+            Write-Status "Failed to install Nerd Font. You can install manually from https://www.nerdfonts.com/" -Type Warning
+        }
+    } else {
+        Write-Status "Scoop not available. Install Nerd Font manually from https://www.nerdfonts.com/" -Type Warning
+    }
+} else {
+    Write-Status "Skipping Nerd Font installation. Icons may not display correctly." -Type Info
+}
+
+# ============================================================================
+# 8. Configure Windows Terminal (if installed)
+# ============================================================================
+
+Write-Host ""
+$wtSettingsPath = Get-ChildItem "$env:LOCALAPPDATA\Packages\Microsoft.WindowsTerminal_*\LocalState\settings.json" -ErrorAction SilentlyContinue | Select-Object -First 1
+
+if ($wtSettingsPath) {
+    Write-Status "Windows Terminal detected at: $($wtSettingsPath.FullName)" -Type Info
+
+    if (Confirm "Add Tokyo Night theme to Windows Terminal?") {
+        try {
+            # Read current settings
+            $wtSettings = Get-Content $wtSettingsPath.FullName -Raw | ConvertFrom-Json
+
+            # Read our theme config
+            $themeConfig = Get-Content (Join-Path $RepoDir "configs\windows-terminal.json") -Raw | ConvertFrom-Json
+
+            # Add Tokyo Night scheme if it doesn't exist
+            if (-not ($wtSettings.schemes | Where-Object { $_.name -eq "Tokyo Night" })) {
+                if (-not $wtSettings.schemes) {
+                    $wtSettings | Add-Member -MemberType NoteProperty -Name "schemes" -Value @()
+                }
+                $wtSettings.schemes += $themeConfig.schemes[0]
+                Write-Status "Added Tokyo Night color scheme" -Type Success
+            } else {
+                Write-Status "Tokyo Night scheme already exists" -Type Info
+            }
+
+            # Update default profile settings
+            if (-not $wtSettings.profiles.defaults) {
+                $wtSettings.profiles | Add-Member -MemberType NoteProperty -Name "defaults" -Value @{}
+            }
+
+            # Set color scheme
+            $wtSettings.profiles.defaults | Add-Member -MemberType NoteProperty -Name "colorScheme" -Value "Tokyo Night" -Force
+
+            # Set font
+            if (-not $wtSettings.profiles.defaults.font) {
+                $wtSettings.profiles.defaults | Add-Member -MemberType NoteProperty -Name "font" -Value @{}
+            }
+            $wtSettings.profiles.defaults.font | Add-Member -MemberType NoteProperty -Name "face" -Value "JetBrainsMono Nerd Font" -Force
+            $wtSettings.profiles.defaults.font | Add-Member -MemberType NoteProperty -Name "size" -Value 12 -Force
+
+            # Set padding
+            $wtSettings.profiles.defaults | Add-Member -MemberType NoteProperty -Name "padding" -Value "10" -Force
+
+            # Save settings
+            $wtSettings | ConvertTo-Json -Depth 10 | Set-Content $wtSettingsPath.FullName -Force
+            Write-Status "Windows Terminal configured with Tokyo Night theme" -Type Success
+        } catch {
+            Write-Status "Failed to configure Windows Terminal: $_" -Type Warning
+            Write-Status "You can manually merge configs\windows-terminal.json into your settings" -Type Info
+        }
+    } else {
+        Write-Status "Skipping Windows Terminal configuration" -Type Info
+    }
+} else {
+    Write-Status "Windows Terminal not detected. Skipping theme configuration." -Type Info
+    Write-Status "Install Windows Terminal: winget install Microsoft.WindowsTerminal" -Type Info
+}
+
+# ============================================================================
+# 9. Configure Git to use Delta (optional)
+# ============================================================================
+
+Write-Host ""
+if (Test-CommandExists 'git') {
+    if (Test-CommandExists 'delta') {
+        if (Confirm "Configure git to use delta for diffs?" -DefaultYes $false) {
+            $deltaConfigPath = Join-Path $RepoDir "configs\delta.gitconfig"
+            try {
+                git config --global include.path $deltaConfigPath
+                Write-Status "Git configured to use delta for diffs" -Type Success
+            } catch {
+                Write-Status "Failed to configure git delta: $_" -Type Warning
+            }
+        } else {
+            Write-Status "Skipping delta git configuration" -Type Info
+        }
+    } else {
+        Write-Status "Delta not installed, skipping git configuration" -Type Info
+    }
+} else {
+    Write-Status "Git not found, skipping delta configuration" -Type Info
+}
+
+# ============================================================================
+# 10. Deploy Configuration Files
 # ============================================================================
 
 Write-Host ""
@@ -367,7 +511,7 @@ $hookLine
 }
 
 # ============================================================================
-# 8. Installation Complete
+# 12. Installation Complete
 # ============================================================================
 
 Write-Host ""
@@ -378,38 +522,49 @@ Write-Host "║                                                               �
 Write-Host "╚═══════════════════════════════════════════════════════════════╝" -ForegroundColor Green
 Write-Host ""
 
-Write-Status "Phase 2 (Core Tools) installation complete!" -Type Success
+Write-Status "Phase 3 (Development Tools) installation complete!" -Type Success
 Write-Host ""
 Write-Host "What was installed:" -ForegroundColor Cyan
-Write-Host "  • Starship prompt with Tokyo Night theme" -ForegroundColor Gray
-Write-Host "  • Enhanced PSReadLine (history & predictions)" -ForegroundColor Gray
-Write-Host "  • zoxide - Smart directory navigation (z/zi)" -ForegroundColor Gray
-Write-Host "  • fzf + PSFzf - Fuzzy finder (Ctrl+R, Ctrl+T)" -ForegroundColor Gray
-Write-Host "  • eza - Modern ls with icons (ls/ll/la/lt)" -ForegroundColor Gray
-Write-Host "  • bat - Syntax-highlighted cat" -ForegroundColor Gray
-Write-Host "  • fd - Fast file finder" -ForegroundColor Gray
-Write-Host "  • ripgrep - Fast grep (rg)" -ForegroundColor Gray
+Write-Host "  Core Tools:" -ForegroundColor White
+Write-Host "    • Starship prompt with Tokyo Night theme" -ForegroundColor Gray
+Write-Host "    • Enhanced PSReadLine (history & predictions)" -ForegroundColor Gray
+Write-Host "    • zoxide - Smart directory navigation (z/zi)" -ForegroundColor Gray
+Write-Host "    • fzf + PSFzf - Fuzzy finder (Ctrl+R, Ctrl+T)" -ForegroundColor Gray
+Write-Host "    • eza - Modern ls with icons (ls/ll/la/lt)" -ForegroundColor Gray
+Write-Host "    • bat - Syntax-highlighted cat" -ForegroundColor Gray
+Write-Host "    • fd - Fast file finder" -ForegroundColor Gray
+Write-Host "    • ripgrep - Fast grep (rg)" -ForegroundColor Gray
+Write-Host ""
+Write-Host "  Development Tools:" -ForegroundColor White
+Write-Host "    • lazygit - Git TUI (lg)" -ForegroundColor Gray
+Write-Host "    • delta - Beautiful git diffs" -ForegroundColor Gray
+Write-Host "    • dust - Disk usage analyzer" -ForegroundColor Gray
+Write-Host ""
+Write-Host "  Visual Enhancements:" -ForegroundColor White
+Write-Host "    • JetBrainsMono Nerd Font (if installed)" -ForegroundColor Gray
+Write-Host "    • Windows Terminal Tokyo Night theme (if configured)" -ForegroundColor Gray
 Write-Host ""
 Write-Host "Quick Start:" -ForegroundColor Cyan
 Write-Host "  z <dir>       - Jump to frequently used directories" -ForegroundColor Gray
 Write-Host "  zi            - Interactive directory picker" -ForegroundColor Gray
 Write-Host "  ls/ll/la      - Beautiful file listings with icons" -ForegroundColor Gray
+Write-Host "  lg            - Open LazyGit TUI" -ForegroundColor Gray
+Write-Host "  git diff      - Beautiful diffs with delta (if configured)" -ForegroundColor Gray
+Write-Host "  dust          - Visual disk usage" -ForegroundColor Gray
 Write-Host "  Ctrl+R        - Fuzzy search command history" -ForegroundColor Gray
 Write-Host "  Ctrl+T        - Fuzzy find files" -ForegroundColor Gray
-Write-Host "  cat <file>    - View files with syntax highlighting" -ForegroundColor Gray
-Write-Host "  fd <pattern>  - Fast file search" -ForegroundColor Gray
-Write-Host "  rg <pattern>  - Fast text search" -ForegroundColor Gray
 Write-Host ""
 Write-Host "Next steps:" -ForegroundColor Cyan
 Write-Host "  1. Restart your terminal or run: " -ForegroundColor Gray -NoNewline
 Write-Host ". `$PROFILE" -ForegroundColor Yellow
-Write-Host "  2. For full icon support, install a Nerd Font:" -ForegroundColor Gray
-Write-Host "     JetBrainsMono Nerd Font from https://www.nerdfonts.com/" -ForegroundColor Gray
+Write-Host "  2. If you installed the Nerd Font, set it in Windows Terminal settings" -ForegroundColor Gray
+Write-Host "  3. Start using the tools! Try 'lg' for an amazing git experience" -ForegroundColor Gray
 Write-Host ""
-Write-Host "Coming in Phase 3:" -ForegroundColor Cyan
-Write-Host "  • Development tools (lazygit, delta, dust)" -ForegroundColor Gray
-Write-Host "  • Windows Terminal Tokyo Night theme" -ForegroundColor Gray
-Write-Host "  • Terminal-Icons module" -ForegroundColor Gray
+Write-Host "Coming in Phase 4:" -ForegroundColor Cyan
+Write-Host "  • TOOLS.md quick reference documentation" -ForegroundColor Gray
+Write-Host "  • README.md with full documentation" -ForegroundColor Gray
+Write-Host "  • Welcome message on first shell launch" -ForegroundColor Gray
+Write-Host "  • Optional tools (yazi, tealdeer)" -ForegroundColor Gray
 Write-Host ""
 Write-Host "Profile location: $PROFILE" -ForegroundColor DarkGray
 Write-Host ""
