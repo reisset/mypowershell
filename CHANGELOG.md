@@ -12,9 +12,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - README.md with installation instructions
 - LICENSE file (MIT)
 - SECURITY.md
-- Welcome message in profile
 - Yazi file manager wrapper function (`y`)
 - Optional tools (yazi, tealdeer)
+
+## [0.3.1] - 2026-01-08
+
+### Fixed - Phase 3.5: Bug Fixes
+- **Installer Add-Member errors**: Fixed "member already exists" errors by adding `-Force` parameter to all `Add-Member` calls in install.ps1 (lines 390, 400, 408)
+- **Font size**: Increased default terminal font from 12pt to 15pt for better readability
+  - Updated both `configs/windows-terminal.json` and `install.ps1`
+
+### Added - Phase 3.5: Welcome Banner
+- **ASCII Art Welcome**: MyPowerShell ASCII art banner displays on first terminal startup
+  - Shows once per session (uses `$env:MYPOWERSHELL_WELCOME_SHOWN`)
+  - Cyan-colored banner with help hint
+  - Only appears in interactive sessions
+  - Added `asciiart.txt` to repository
+
+### Changed
+- Profile now includes welcome banner section (Section 5)
+- Improved user experience with visual branding on startup
 
 ## [0.3.0] - 2026-01-08
 
