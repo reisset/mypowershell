@@ -1,5 +1,6 @@
-# Project spec (for development only, not for end users)
+# Development-only files (not for end users)
 mypowershell-spec.md
+CLAUDE.md
 
 # Temporary files
 *.tmp
