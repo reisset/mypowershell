@@ -7,13 +7,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Planned for Phase 4
-- TOOLS.md quick reference documentation
-- README.md with installation instructions
-- LICENSE file (MIT)
-- SECURITY.md
-- Yazi file manager wrapper function (`y`)
-- Optional tools (yazi, tealdeer)
+No unreleased changes. MyPowerShell v1.0.0 is complete!
+
+## [1.0.0] - 2026-01-08
+
+### Added - Phase 4: Documentation & Polish
+- **Documentation**
+  - Comprehensive README.md with installation guide, features table, and quick reference
+  - docs/TOOLS.md quick reference guide (adapted from MyBash)
+  - LICENSE file (MIT)
+  - SECURITY.md with security considerations and audit history
+
+- **Yazi Integration**
+  - Yazi file manager wrapper function (`y` command) in profile.ps1
+  - Allows directory changes after exiting yazi (like MyBash implementation)
+
+- **Optional Tools**
+  - Yazi: Modern terminal file manager (TUI file browser)
+  - Tealdeer: Fast tldr client for quick command examples
+  - Both tools prompt during installation (default: No)
+
+### Changed
+- Installer completion message updated to reference v1.0 instead of "Phase 3"
+- Added "Optional Tools" section to completion message
+- Added `tools`, `y`, and `tldr` commands to Quick Start guide
+- Updated "Next steps" to reference README.md and TOOLS.md
+- Fixed installer section numbering (7-13 sequential)
+
+### Documentation Highlights
+- **README.md**: Full project documentation with features, installation, customization
+- **TOOLS.md**: PowerShell-adapted quick reference with learning-first philosophy
+- **SECURITY.md**: Comprehensive security policy and audit history
 
 ## [0.3.1] - 2026-01-08
 
