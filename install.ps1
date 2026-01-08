@@ -341,7 +341,31 @@ if (Test-CommandExists 'scoop') {
 }
 
 # ============================================================================
-# 7. Install Nerd Font (JetBrainsMono)
+# 7. Install Optional Tools (prompted)
+# ============================================================================
+
+Write-Host ""
+Write-Status "Optional tools enhance your experience but aren't required." -Type Info
+
+# Yazi - Modern terminal file manager
+if (Confirm-No "Install yazi file manager? (Modern TUI file browser)") {
+    Write-Status "Installing yazi via scoop..." -Type Info
+    Install-ScoopPackage "yazi"
+}
+
+# Tealdeer - Fast tldr client (command examples)
+if (Confirm-No "Install tealdeer? (Quick command examples via 'tldr')") {
+    Write-Status "Installing tealdeer via scoop..." -Type Info
+    Install-ScoopPackage "tealdeer"
+
+    if (Test-CommandExists 'tldr') {
+        Write-Status "Updating tealdeer cache..." -Type Info
+        tldr --update 2>&1 | Out-Null
+    }
+}
+
+# ============================================================================
+# 8. Install Nerd Font (JetBrainsMono)
 # ============================================================================
 
 Write-Host ""
@@ -367,7 +391,7 @@ if (Confirm "Install JetBrainsMono Nerd Font? (Required for icons)") {
 }
 
 # ============================================================================
-# 8. Configure Windows Terminal (if installed)
+# 9. Configure Windows Terminal (if installed)
 # ============================================================================
 
 Write-Host ""
@@ -429,7 +453,7 @@ if ($wtSettingsPath) {
 }
 
 # ============================================================================
-# 9. Configure Git to use Delta (optional)
+# 10. Configure Git to use Delta (optional)
 # ============================================================================
 
 Write-Host ""
@@ -454,7 +478,7 @@ if (Test-CommandExists 'git') {
 }
 
 # ============================================================================
-# 10. Deploy Configuration Files
+# 11. Deploy Configuration Files
 # ============================================================================
 
 Write-Host ""
@@ -475,7 +499,7 @@ Copy-Item $starshipSource $starshipDest -Force
 Write-Status "Starship config deployed to $starshipDest" -Type Success
 
 # ============================================================================
-# 7. Setup PowerShell Profile
+# 12. Setup PowerShell Profile
 # ============================================================================
 
 Write-Host ""
@@ -511,7 +535,7 @@ $hookLine
 }
 
 # ============================================================================
-# 12. Installation Complete
+# 13. Installation Complete
 # ============================================================================
 
 Write-Host ""
@@ -522,7 +546,7 @@ Write-Host "║                                                               �
 Write-Host "╚═══════════════════════════════════════════════════════════════╝" -ForegroundColor Green
 Write-Host ""
 
-Write-Status "Phase 3 (Development Tools) installation complete!" -Type Success
+Write-Status "MyPowerShell v1.0 installation complete!" -Type Success
 Write-Host ""
 Write-Host "What was installed:" -ForegroundColor Cyan
 Write-Host "  Core Tools:" -ForegroundColor White
@@ -540,9 +564,14 @@ Write-Host "    • lazygit - Git TUI (lg)" -ForegroundColor Gray
 Write-Host "    • delta - Beautiful git diffs" -ForegroundColor Gray
 Write-Host "    • dust - Disk usage analyzer" -ForegroundColor Gray
 Write-Host ""
+Write-Host "  Optional Tools:" -ForegroundColor White
+Write-Host "    • yazi - Terminal file manager (y)" -ForegroundColor Gray
+Write-Host "    • tealdeer - Quick command examples (tldr)" -ForegroundColor Gray
+Write-Host ""
 Write-Host "  Visual Enhancements:" -ForegroundColor White
 Write-Host "    • JetBrainsMono Nerd Font (if installed)" -ForegroundColor Gray
 Write-Host "    • Windows Terminal Tokyo Night theme (if configured)" -ForegroundColor Gray
+Write-Host "    • ASCII art welcome banner" -ForegroundColor Gray
 Write-Host ""
 Write-Host "Quick Start:" -ForegroundColor Cyan
 Write-Host "  z <dir>       - Jump to frequently used directories" -ForegroundColor Gray
@@ -551,20 +580,18 @@ Write-Host "  ls/ll/la      - Beautiful file listings with icons" -ForegroundCol
 Write-Host "  lg            - Open LazyGit TUI" -ForegroundColor Gray
 Write-Host "  git diff      - Beautiful diffs with delta (if configured)" -ForegroundColor Gray
 Write-Host "  dust          - Visual disk usage" -ForegroundColor Gray
+Write-Host "  y             - Open yazi file manager (if installed)" -ForegroundColor Gray
+Write-Host "  tldr <cmd>    - Quick command examples (if installed)" -ForegroundColor Gray
+Write-Host "  tools         - View quick reference guide" -ForegroundColor Gray
 Write-Host "  Ctrl+R        - Fuzzy search command history" -ForegroundColor Gray
 Write-Host "  Ctrl+T        - Fuzzy find files" -ForegroundColor Gray
 Write-Host ""
 Write-Host "Next steps:" -ForegroundColor Cyan
 Write-Host "  1. Restart your terminal or run: " -ForegroundColor Gray -NoNewline
 Write-Host ". `$PROFILE" -ForegroundColor Yellow
-Write-Host "  2. If you installed the Nerd Font, set it in Windows Terminal settings" -ForegroundColor Gray
-Write-Host "  3. Start using the tools! Try 'lg' for an amazing git experience" -ForegroundColor Gray
-Write-Host ""
-Write-Host "Coming in Phase 4:" -ForegroundColor Cyan
-Write-Host "  • TOOLS.md quick reference documentation" -ForegroundColor Gray
-Write-Host "  • README.md with full documentation" -ForegroundColor Gray
-Write-Host "  • Welcome message on first shell launch" -ForegroundColor Gray
-Write-Host "  • Optional tools (yazi, tealdeer)" -ForegroundColor Gray
+Write-Host "  2. See the ASCII art welcome banner on your next terminal" -ForegroundColor Gray
+Write-Host "  3. Run 'tools' to view the full command reference guide" -ForegroundColor Gray
+Write-Host "  4. Check out README.md for complete documentation" -ForegroundColor Gray
 Write-Host ""
 Write-Host "Profile location: $PROFILE" -ForegroundColor DarkGray
 Write-Host ""
