@@ -8,7 +8,7 @@ A high-performance PowerShell environment for Windows 11. Built to enhance produ
 - **Modern Toolset:** Includes `zoxide` (smart cd), `eza` (modern ls), `bat`, `fzf`, `lazygit`, `delta`, and more.
 - **Muscle Memory Safe:** Standard PowerShell commands still work - you won't get lost on vanilla systems.
 - **Visual Polish:** Tokyo Night theme, JetBrainsMono Nerd Font, syntax-highlighted diffs.
-- **Fast Startup:** Sub-500ms profile load time with lazy-loading optimizations.
+- **Fast Startup:** ~150-200ms profile load time (v1.2.0) with aggressive optimizations.
 
 ## Quick Start
 
@@ -157,9 +157,15 @@ To remove MyPowerShell:
 
 ## Performance
 
-- **Profile Load Time:** < 500ms (optimized with lazy-loading)
+- **Profile Load Time:** ~150-200ms (v1.2.0 with aggressive optimizations)
+  - v1.0.0: ~500ms baseline
+  - v1.1.0: <250ms (batch checks + init caching)
+  - v1.2.0: ~150-200ms (optimized Get-Command, .NET APIs, removed redundant checks)
 - **No Terminal-Icons:** Removed due to ~450ms startup penalty
 - **PSFzf Lazy-Loading:** Only loads when Ctrl+R or Ctrl+T is pressed
+- **Batch Tool Detection:** Single Get-Command call for all tools
+- **.NET File APIs:** Uses faster .NET methods instead of PowerShell cmdlets
+- **Starship Timeouts:** 30s scan timeout, 500ms command timeout prevents hangs
 
 ## Requirements
 

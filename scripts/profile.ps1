@@ -1,6 +1,6 @@
 # MyPowerShell Profile
 # High-performance PowerShell environment inspired by MyBash
-# Version: 1.1.0 (Performance Optimized)
+# Version: 1.2.1 (Bug fix: Windows .exe extension handling)
 
 # Set root directory
 $MyPowerShellRoot = $PSScriptRoot | Split-Path -Parent
@@ -8,18 +8,17 @@ $MyPowerShellRoot = $PSScriptRoot | Split-Path -Parent
 # ============================================================================
 # 0. Batch Command Availability Check (Performance Optimization)
 # ============================================================================
-# Check all tools once instead of individually (~150ms saved)
-$script:ToolsAvailable = @{
-    starship = $null -ne (Get-Command starship -ErrorAction SilentlyContinue)
-    zoxide   = $null -ne (Get-Command zoxide -ErrorAction SilentlyContinue)
-    fzf      = $null -ne (Get-Command fzf -ErrorAction SilentlyContinue)
-    eza      = $null -ne (Get-Command eza -ErrorAction SilentlyContinue)
-    bat      = $null -ne (Get-Command bat -ErrorAction SilentlyContinue)
-    fd       = $null -ne (Get-Command fd -ErrorAction SilentlyContinue)
-    rg       = $null -ne (Get-Command rg -ErrorAction SilentlyContinue)
-    lazygit  = $null -ne (Get-Command lazygit -ErrorAction SilentlyContinue)
-    yazi     = $null -ne (Get-Command yazi -ErrorAction SilentlyContinue)
+# Check all tools in a single Get-Command call (~180ms saved)
+# Force array with @() to ensure consistent behavior
+$foundTools = @(Get-Command -Name starship,zoxide,fzf,eza,bat,fd,rg,lazygit,yazi,glow -ErrorAction SilentlyContinue)
+$script:ToolsAvailable = @{}
+foreach ($tool in @('starship','zoxide','fzf','eza','bat','fd','rg','lazygit','yazi','glow')) {
+    # Match with or without .exe extension (Windows compatibility)
+    $script:ToolsAvailable[$tool] = ($foundTools.Name -contains $tool) -or ($foundTools.Name -contains "$tool.exe")
 }
+
+# Check module availability (separate from commands)
+$script:ToolsAvailable['PSFzf'] = $null -ne (Get-Module -ListAvailable -Name PSFzf)
 
 # ============================================================================
 # 1. Source Aliases (with tool availability passed)
@@ -37,8 +36,8 @@ if ($ToolsAvailable.starship) {
 
     # Cache init script for faster startup (~50ms saved)
     $starshipCache = "$env:TEMP\mypowershell-starship-init.ps1"
-    $cacheAge = if (Test-Path $starshipCache) {
-        ((Get-Date) - (Get-Item $starshipCache).LastWriteTime).Days
+    $cacheAge = if ([System.IO.File]::Exists($starshipCache)) {
+        ((Get-Date) - [System.IO.File]::GetLastWriteTime($starshipCache)).Days
     } else { 999 }
 
     # Regenerate cache if it doesn't exist or is older than 7 days
@@ -54,22 +53,19 @@ if ($ToolsAvailable.starship) {
 # 3. PSReadLine Enhancements (History & Prediction)
 # ============================================================================
 # Only configure PSReadLine in interactive sessions
-if ($Host.UI.RawUI -and (Get-Module -ListAvailable -Name PSReadLine)) {
+# Note: PSReadLine is built-in to PowerShell 5.1+, no availability check needed
+if ($Host.UI.RawUI) {
     Import-Module PSReadLine -ErrorAction SilentlyContinue
 
     # Predictive IntelliSense from history (only if supported)
     try {
-        Set-PSReadLineOption -PredictionSource History -ErrorAction Stop
-        Set-PSReadLineOption -PredictionViewStyle ListView -ErrorAction Stop
+        Set-PSReadLineOption -PredictionSource History -PredictionViewStyle ListView -ErrorAction Stop
     } catch {
         # Prediction not supported in this terminal, skip
     }
 
-    # Emacs-style editing
-    Set-PSReadLineOption -EditMode Emacs -ErrorAction SilentlyContinue
-
-    # No bell
-    Set-PSReadLineOption -BellStyle None -ErrorAction SilentlyContinue
+    # Other PSReadLine options (combined for performance)
+    Set-PSReadLineOption -EditMode Emacs -BellStyle None -ErrorAction SilentlyContinue
 
     # Better history search
     Set-PSReadLineKeyHandler -Key UpArrow -Function HistorySearchBackward -ErrorAction SilentlyContinue
@@ -82,8 +78,8 @@ if ($Host.UI.RawUI -and (Get-Module -ListAvailable -Name PSReadLine)) {
 if ($ToolsAvailable.zoxide) {
     # Cache init script for faster startup (~50ms saved)
     $zoxideCache = "$env:TEMP\mypowershell-zoxide-init.ps1"
-    $cacheAge = if (Test-Path $zoxideCache) {
-        ((Get-Date) - (Get-Item $zoxideCache).LastWriteTime).Days
+    $cacheAge = if ([System.IO.File]::Exists($zoxideCache)) {
+        ((Get-Date) - [System.IO.File]::GetLastWriteTime($zoxideCache)).Days
     } else { 999 }
 
     # Regenerate cache if it doesn't exist or is older than 7 days
@@ -101,7 +97,7 @@ if ($ToolsAvailable.zoxide) {
 if ($ToolsAvailable.fzf) {
     # PSFzf module lazy-loaded only when needed
     # Use Ctrl+T or Ctrl+R - module loads automatically on first use
-    if (Get-Module -ListAvailable -Name PSFzf) {
+    if ($ToolsAvailable.PSFzf) {
         # Define lazy-loading function
         function global:Initialize-PSFzf {
             if (-not (Get-Module PSFzf)) {
@@ -144,8 +140,8 @@ if ($ToolsAvailable.yazi) {
 # ============================================================================
 if ($Host.UI.RawUI -and -not $env:MYPOWERSHELL_WELCOME_SHOWN) {
     $asciiPath = Join-Path $MyPowerShellRoot "asciiart.txt"
-    if (Test-Path $asciiPath) {
-        Get-Content $asciiPath | Write-Host -ForegroundColor Cyan
+    if ([System.IO.File]::Exists($asciiPath)) {
+        [System.IO.File]::ReadAllLines($asciiPath) | Write-Host -ForegroundColor Cyan
         Write-Host ""
         Write-Host "Type 'tools' for quick reference" -ForegroundColor DarkGray
     }

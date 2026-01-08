@@ -1,3 +1,7 @@
+# Performance: Timeouts prevent slow prompts in edge cases
+scan_timeout = 30
+command_timeout = 500
+
 format = """\
 [╭╴](fg:arrow)\
 $username\
