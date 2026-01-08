@@ -83,7 +83,22 @@ if (Get-Command fzf -ErrorAction SilentlyContinue) {
 }
 
 # ============================================================================
-# 5. Welcome Banner (once per session)
+# 5. Yazi File Manager Wrapper (allows cwd change)
+# ============================================================================
+if (Get-Command yazi -ErrorAction SilentlyContinue) {
+    function y {
+        $tmp = [System.IO.Path]::GetTempFileName()
+        yazi $args --cwd-file="$tmp"
+        $cwd = Get-Content -Path $tmp -ErrorAction SilentlyContinue
+        if ($cwd -and $cwd -ne $PWD.Path) {
+            Set-Location -Path $cwd
+        }
+        Remove-Item -Path $tmp -ErrorAction SilentlyContinue
+    }
+}
+
+# ============================================================================
+# 6. Welcome Banner (once per session)
 # ============================================================================
 if ($Host.UI.RawUI -and -not $env:MYPOWERSHELL_WELCOME_SHOWN) {
     $asciiPath = Join-Path $MyPowerShellRoot "asciiart.txt"
