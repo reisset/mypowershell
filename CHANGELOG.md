@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.1] - 2026-01-08
+
+### Fixed
+- **Uninstaller Regex Bug**: Fixed profile hook removal failure (v1.1.1)
+  - Previous regex pattern expected `. "..."` line immediately after header
+  - Actual profile had extra comment line between header and source line
+  - Updated regex to handle optional comment lines: `(?:#[^\r\n]*\r?\n)*`
+  - File: `uninstall.ps1` (v1.1.1) line 74
+  - Impact: Uninstaller now properly removes MyPowerShell hook from `$PROFILE`
+  - Previously uninstaller appeared to work but left profile hook intact
+
+- **Profile Cache Creation**: Added robust error handling with fallback (v1.2.2)
+  - Cache creation failures now caught and handled gracefully
+  - Falls back to direct init (`Invoke-Expression`) if cache creation fails
+  - Ensures profile loads even if `$env:TEMP` has write issues
+  - Applied to both starship and zoxide init caching
+  - Files: `scripts/profile.ps1` (v1.2.2) lines 44-60 and 97-113
+  - Impact: Profile is more resilient to cache-related failures
+
 ## [1.1.0-uninstall] - 2026-01-08
 
 ### Added - Uninstaller Script

@@ -1,6 +1,6 @@
 # MyPowerShell Profile
 # High-performance PowerShell environment inspired by MyBash
-# Version: 1.2.1 (Bug fix: Windows .exe extension handling)
+# Version: 1.2.2 (Bug fix: Cache error handling + fallback)
 
 # Set root directory
 $MyPowerShellRoot = $PSScriptRoot | Split-Path -Parent
@@ -42,11 +42,22 @@ if ($ToolsAvailable.starship) {
 
     # Regenerate cache if it doesn't exist or is older than 7 days
     if ($cacheAge -gt 7) {
-        starship init powershell | Set-Content $starshipCache -Force
+        try {
+            $initOutput = starship init powershell
+            if ($initOutput) {
+                $initOutput | Set-Content $starshipCache -Force -ErrorAction Stop
+            }
+        } catch {
+            # Cache creation failed, will fall back to direct init
+        }
     }
 
-    # Source cached init script
-    . $starshipCache
+    # Source cached script OR run direct init as fallback
+    if ([System.IO.File]::Exists($starshipCache)) {
+        . $starshipCache
+    } else {
+        Invoke-Expression (&starship init powershell)
+    }
 }
 
 # ============================================================================
@@ -84,11 +95,22 @@ if ($ToolsAvailable.zoxide) {
 
     # Regenerate cache if it doesn't exist or is older than 7 days
     if ($cacheAge -gt 7) {
-        zoxide init powershell | Set-Content $zoxideCache -Force
+        try {
+            $initOutput = zoxide init powershell
+            if ($initOutput) {
+                $initOutput | Set-Content $zoxideCache -Force -ErrorAction Stop
+            }
+        } catch {
+            # Cache creation failed, will fall back to direct init
+        }
     }
 
-    # Source cached init script
-    . $zoxideCache
+    # Source cached script OR run direct init as fallback
+    if ([System.IO.File]::Exists($zoxideCache)) {
+        . $zoxideCache
+    } else {
+        Invoke-Expression (&zoxide init powershell)
+    }
 }
 
 # ============================================================================
