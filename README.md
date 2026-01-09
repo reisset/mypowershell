@@ -91,6 +91,9 @@ cat file.txt # Syntax-highlighted view (bat)
 fd pattern   # Fast file search
 rg pattern   # Fast text search
 Ctrl+R       # Fuzzy history search
+dust         # Visual disk usage
+y            # Yazi file manager
+tldr cmd     # Quick command examples
 ```
 
 ## License
