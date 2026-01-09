@@ -5,21 +5,6 @@ All notable changes to MyPowerShell will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.1.2] - 2026-01-09
-
-### Fixed
-- **Uninstaller**: Fixed scoop false-positive bug where tools showed as uninstalled when they weren't
-  - Scoop returns exit code 0 even with "isn't installed" error message
-  - Added pattern check for "isn't installed" in scoop output before marking as successful
-  - Applies to core, dev, and optional tool uninstallation loops
-
-### Changed
-- **Uninstaller Output**: Polished to match installer formatting style
-  - Header now uses Unicode box-drawing characters (removed version number)
-  - Consolidated end section into single green completion banner
-  - Changed bullet points from `-` to `•` for consistency
-  - Removed redundant separator boxes for cleaner output
-
 ## [1.2.4] - 2026-01-09
 
 ### Fixed
@@ -47,22 +32,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Removed "Quick Start" section (delegated to `tools` command)
 - **README**: Added missing tools (`dust`, `y`, `tldr`) to Quick Reference
 
+## [1.1.2] - 2026-01-09
+
+### Fixed
+- **Uninstaller**: Fixed scoop false-positive bug where tools showed as uninstalled when they weren't
+  - Scoop returns exit code 0 even with "isn't installed" error message
+  - Added pattern check for "isn't installed" in scoop output before marking as successful
+  - Applies to core, dev, and optional tool uninstallation loops
+
+### Changed
+- **Uninstaller Output**: Polished to match installer formatting style
+  - Header now uses Unicode box-drawing characters (removed version number)
+  - Consolidated end section into single green completion banner
+  - Changed bullet points from `-` to `•` for consistency
+  - Removed redundant separator boxes for cleaner output
+
 ## [1.1.1] - 2026-01-08
 
 ### Fixed
 - **Uninstaller**: Fixed profile hook removal failure due to regex pattern mismatch
 - **Profile Cache**: Added error handling with fallback to direct init if cache creation fails
-
-## [1.1.0-uninstall] - 2026-01-08
-
-### Added
-- **Comprehensive Uninstaller Script** (`uninstall.ps1`)
-  - Step-by-step uninstallation with safe default-NO confirmations
-  - Automatic tool uninstallation (detects winget vs scoop)
-  - Immediate session reset (no restart needed)
-  - Removes profile hook, configs, cached scripts, git delta config
-  - Optional Windows Terminal cleanup (Tokyo Night theme removal)
-  - Preserves JetBrainsMono Nerd Font
 
 ## [1.2.1] - 2026-01-08
 
