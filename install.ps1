@@ -6,7 +6,7 @@
     Installs modern CLI tools and configurations inspired by MyBash for Linux.
     Installs modern CLI tools (starship, zoxide, fzf, eza, bat, fd, ripgrep, lazygit, delta, dust) with Tokyo Night theme
 .NOTES
-    Version: 1.2.3
+    Version: 1.2.4
     No administrator privileges required
 #>
 
@@ -421,7 +421,7 @@ if ($wtSettingsPath) {
 
             # Update default profile settings
             if (-not $wtSettings.profiles.defaults) {
-                $wtSettings.profiles | Add-Member -MemberType NoteProperty -Name "defaults" -Value @{} -Force
+                $wtSettings.profiles | Add-Member -MemberType NoteProperty -Name "defaults" -Value ([PSCustomObject]@{}) -Force
             }
 
             # Set color scheme
@@ -429,7 +429,7 @@ if ($wtSettingsPath) {
 
             # Set font
             if (-not $wtSettings.profiles.defaults.font) {
-                $wtSettings.profiles.defaults | Add-Member -MemberType NoteProperty -Name "font" -Value @{} -Force
+                $wtSettings.profiles.defaults | Add-Member -MemberType NoteProperty -Name "font" -Value ([PSCustomObject]@{}) -Force
             }
             $wtSettings.profiles.defaults.font | Add-Member -MemberType NoteProperty -Name "face" -Value "JetBrainsMono Nerd Font" -Force
             $wtSettings.profiles.defaults.font | Add-Member -MemberType NoteProperty -Name "size" -Value 15 -Force

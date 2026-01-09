@@ -5,6 +5,15 @@ All notable changes to MyPowerShell will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.4] - 2026-01-09
+
+### Fixed
+- **Windows Terminal Font Configuration**: Fixed bug where font settings were not applied after fresh install
+  - Installer used `@{}` (hashtable) instead of `[PSCustomObject]@{}` for `defaults` and `font` objects
+  - NoteProperties added via `Add-Member` to hashtables don't serialize to JSON (only PSCustomObject properties do)
+  - After uninstall + reinstall, font would remain on Cascadia Mono instead of JetBrainsMono Nerd Font size 15
+  - Fixed by using `[PSCustomObject]@{}` in lines 424 and 432
+
 ## [1.2.3] - 2026-01-09
 
 ### Fixed
