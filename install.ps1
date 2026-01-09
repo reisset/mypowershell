@@ -6,7 +6,7 @@
     Installs modern CLI tools and configurations inspired by MyBash for Linux.
     Installs modern CLI tools (starship, zoxide, fzf, eza, bat, fd, ripgrep, lazygit, delta, dust) with Tokyo Night theme
 .NOTES
-    Version: 1.2.1
+    Version: 1.2.3
     No administrator privileges required
 #>
 
@@ -520,7 +520,7 @@ $profileSource = Join-Path $RepoDir "scripts\profile.ps1"
 $hookLine = ". `"$profileSource`""
 
 $existingContent = Get-Content $PROFILE -Raw -ErrorAction SilentlyContinue
-if ($existingContent -notlike "*$profileSource*") {
+if (-not $existingContent -or $existingContent -notlike "*$profileSource*") {
     $hookComment = @"
 
 # ============================================================================

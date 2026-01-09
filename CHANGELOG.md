@@ -5,6 +5,15 @@ All notable changes to MyPowerShell will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.3] - 2026-01-09
+
+### Fixed
+- **Installer Hook Detection**: Fixed critical bug where empty profile after uninstall would not have hook re-added
+  - `$null -notlike "*pattern*"` returns empty array in PowerShell, which evaluates to `$false`
+  - Added explicit null check: `if (-not $existingContent -or $existingContent -notlike "*$profileSource*")`
+  - Fixes issue where after running uninstaller, re-running installer would say "hook already exists" but leave profile empty
+  - This caused all features (Starship, zoxide, aliases, ASCII art) to not work after fresh install
+
 ## [1.2.2] - 2026-01-09
 
 ### Changed
