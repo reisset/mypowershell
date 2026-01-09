@@ -4,9 +4,9 @@
     MyPowerShell Installer - High-performance PowerShell environment for Windows
 .DESCRIPTION
     Installs modern CLI tools and configurations inspired by MyBash for Linux.
-    Phase 3: Development Tools (lazygit, delta, dust + Windows Terminal theme + Nerd Font)
+    Installs modern CLI tools (starship, zoxide, fzf, eza, bat, fd, ripgrep, lazygit, delta, dust) with Tokyo Night theme
 .NOTES
-    Version: 1.0.0-phase3
+    Version: 1.2.1
     No administrator privileges required
 #>
 
@@ -129,7 +129,7 @@ Clear-Host
 Write-Host ""
 Write-Host "╔═══════════════════════════════════════════════════════════════╗" -ForegroundColor Cyan
 Write-Host "║                                                               ║" -ForegroundColor Cyan
-Write-Host "║             MyPowerShell Installer - Phase 3                  ║" -ForegroundColor Cyan
+Write-Host "║                    MyPowerShell Installer                     ║" -ForegroundColor Cyan
 Write-Host "║     High-Performance PowerShell Environment for Windows       ║" -ForegroundColor Cyan
 Write-Host "║                                                               ║" -ForegroundColor Cyan
 Write-Host "╚═══════════════════════════════════════════════════════════════╝" -ForegroundColor Cyan
@@ -546,8 +546,6 @@ Write-Host "║                                                               �
 Write-Host "╚═══════════════════════════════════════════════════════════════╝" -ForegroundColor Green
 Write-Host ""
 
-Write-Status "MyPowerShell v1.0 installation complete!" -Type Success
-Write-Host ""
 Write-Host "What was installed:" -ForegroundColor Cyan
 Write-Host "  Core Tools:" -ForegroundColor White
 Write-Host "    • Starship prompt with Tokyo Night theme" -ForegroundColor Gray
@@ -572,20 +570,6 @@ Write-Host "  Visual Enhancements:" -ForegroundColor White
 Write-Host "    • JetBrainsMono Nerd Font (if installed)" -ForegroundColor Gray
 Write-Host "    • Windows Terminal Tokyo Night theme (if configured)" -ForegroundColor Gray
 Write-Host "    • ASCII art welcome banner" -ForegroundColor Gray
-Write-Host ""
-Write-Host "Quick Start:" -ForegroundColor Cyan
-Write-Host "  z <dir>       - Jump to frequently used directories" -ForegroundColor Gray
-Write-Host "  zi            - Interactive directory picker" -ForegroundColor Gray
-Write-Host "  ls/ll/la      - Beautiful file listings with icons" -ForegroundColor Gray
-Write-Host "  lg            - Open LazyGit TUI" -ForegroundColor Gray
-Write-Host "  git diff      - Beautiful diffs with delta (if configured)" -ForegroundColor Gray
-Write-Host "  dust          - Visual disk usage" -ForegroundColor Gray
-Write-Host "  y             - Open yazi file manager (if installed)" -ForegroundColor Gray
-Write-Host "  tldr <cmd>    - Quick command examples (if installed)" -ForegroundColor Gray
-Write-Host "  tools         - View quick reference guide" -ForegroundColor Gray
-Write-Host "  Ctrl+R        - Fuzzy search command history" -ForegroundColor Gray
-Write-Host "  Ctrl+T        - Fuzzy find files" -ForegroundColor Gray
-Write-Host ""
 Write-Host "Next steps:" -ForegroundColor Cyan
 Write-Host "  1. Restart your terminal or run: " -ForegroundColor Gray -NoNewline
 Write-Host ". `$PROFILE" -ForegroundColor Yellow
