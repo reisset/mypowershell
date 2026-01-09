@@ -33,10 +33,12 @@ function Confirm {
 
 function Write-Banner {
     Write-Host ""
-    Write-Host "=============================================================================" -ForegroundColor Cyan
-    Write-Host "  MyPowerShell Uninstaller v1.1.1" -ForegroundColor Cyan
-    Write-Host "  Restores native PowerShell environment" -ForegroundColor Cyan
-    Write-Host "=============================================================================" -ForegroundColor Cyan
+    Write-Host "╔═══════════════════════════════════════════════════════════════╗" -ForegroundColor Cyan
+    Write-Host "║                                                               ║" -ForegroundColor Cyan
+    Write-Host "║                   MyPowerShell Uninstaller                    ║" -ForegroundColor Cyan
+    Write-Host "║          Restores Native PowerShell Environment               ║" -ForegroundColor Cyan
+    Write-Host "║                                                               ║" -ForegroundColor Cyan
+    Write-Host "╚═══════════════════════════════════════════════════════════════╝" -ForegroundColor Cyan
     Write-Host ""
 }
 
@@ -298,7 +300,8 @@ if (Confirm "Uninstall Core tools (starship, zoxide, fzf, eza, bat, fd, rg)?") {
         if (-not $uninstalled -and $tool.Scoop) {
             Write-Host "  Uninstalling $($tool.Name) via scoop..." -ForegroundColor Gray
             $result = scoop uninstall $tool.Scoop 2>&1
-            if ($LASTEXITCODE -eq 0) {
+            $resultText = ($result | Out-String)
+            if ($LASTEXITCODE -eq 0 -and $resultText -notmatch "isn't installed") {
                 $uninstalled = $true
             }
         }
@@ -341,7 +344,8 @@ if (Confirm "Uninstall Dev tools (lazygit, delta, dust)?") {
         if (-not $uninstalled -and $tool.Scoop) {
             Write-Host "  Uninstalling $($tool.Name) via scoop..." -ForegroundColor Gray
             $result = scoop uninstall $tool.Scoop 2>&1
-            if ($LASTEXITCODE -eq 0) {
+            $resultText = ($result | Out-String)
+            if ($LASTEXITCODE -eq 0 -and $resultText -notmatch "isn't installed") {
                 $uninstalled = $true
             }
         }
@@ -372,7 +376,8 @@ if (Confirm "Uninstall Optional tools (yazi, tealdeer)?") {
     foreach ($tool in $optionalTools) {
         Write-Host "  Uninstalling $($tool.Name) via scoop..." -ForegroundColor Gray
         $result = scoop uninstall $tool.Scoop 2>&1
-        if ($LASTEXITCODE -eq 0) {
+        $resultText = ($result | Out-String)
+        if ($LASTEXITCODE -eq 0 -and $resultText -notmatch "isn't installed") {
             Write-Host "    ✓ $($tool.Name) uninstalled" -ForegroundColor Green
             $toolsUninstalled += $tool.Name
         } else {
@@ -460,36 +465,31 @@ Write-Host ""
 # Step 8: Summary and Next Steps
 # ============================================================================
 
-Log-Info "Step 8: Uninstall complete"
 Write-Host ""
-Write-Host "=============================================================================" -ForegroundColor Cyan
-Write-Host "  Summary" -ForegroundColor Cyan
-Write-Host "=============================================================================" -ForegroundColor Cyan
+Write-Host "╔═══════════════════════════════════════════════════════════════╗" -ForegroundColor Green
+Write-Host "║                                                               ║" -ForegroundColor Green
+Write-Host "║                  Uninstallation Complete! ✓                   ║" -ForegroundColor Green
+Write-Host "║                                                               ║" -ForegroundColor Green
+Write-Host "╚═══════════════════════════════════════════════════════════════╝" -ForegroundColor Green
 Write-Host ""
 
 if ($script:ActionsPerformed.Count -gt 0) {
-    Log-Info "Actions performed:"
+    Write-Host "Actions performed:" -ForegroundColor Cyan
     foreach ($action in $script:ActionsPerformed) {
-        Write-Host "  - $action" -ForegroundColor White
+        Write-Host "  • $action" -ForegroundColor Gray
     }
 } else {
-    Log-Warn "No actions were performed (all steps skipped)"
+    Write-Host "No actions were performed (all steps skipped)" -ForegroundColor Yellow
 }
 
 Write-Host ""
-Write-Host "=============================================================================" -ForegroundColor Cyan
-Write-Host "  Next Steps" -ForegroundColor Cyan
-Write-Host "=============================================================================" -ForegroundColor Cyan
-Write-Host ""
-Log-Info "Your PowerShell session has been reset to defaults!"
+Write-Host "Your session has been reset:" -ForegroundColor Cyan
 Write-Host "  ✓ Prompt reset to 'PS C:\>'" -ForegroundColor Green
 Write-Host "  ✓ PSReadLine predictions disabled" -ForegroundColor Green
 Write-Host "  ✓ Environment variables cleared" -ForegroundColor Green
 Write-Host ""
-Log-Info "New PowerShell sessions will also load cleanly"
+Write-Host "New PowerShell sessions will also load cleanly." -ForegroundColor Gray
 Write-Host ""
-Log-Info "If you want to reinstall MyPowerShell later:"
-Write-Host "  Run: .\install.ps1" -ForegroundColor White
-Write-Host ""
-Write-Host "=============================================================================" -ForegroundColor Cyan
+Write-Host "To reinstall later: " -ForegroundColor Gray -NoNewline
+Write-Host ".\install.ps1" -ForegroundColor Yellow
 Write-Host ""
