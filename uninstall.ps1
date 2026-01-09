@@ -1,7 +1,7 @@
 # MyPowerShell Uninstaller
 # Removes MyPowerShell configuration and restores default PowerShell environment
 # Inspired by MyBash uninstall patterns
-# Version: 1.1.1 (Fixed: Profile hook regex pattern + cache error handling)
+# Version: 1.1.2 (Fixed: Scoop false-positive detection + output polish)
 
 #Requires -Version 5.1
 

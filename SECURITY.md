@@ -87,28 +87,6 @@ MyPowerShell does **not**:
 
 Individual tools (starship, zoxide, etc.) may have their own telemetry - consult their documentation.
 
-## Audit History
-
-- **2026-01-08**: v0.3.1 (Phase 3.5)
-  - Fixed Add-Member errors with -Force parameter
-  - Updated font size to 15pt
-  - Added ASCII art welcome banner
-- **2026-01-08**: v0.3.0 (Phase 3)
-  - Added development tools (lazygit, delta, dust)
-  - Windows Terminal theme auto-injection
-  - Nerd Font installation via scoop
-  - Removed Terminal-Icons module for performance
-- **2026-01-08**: v0.2.0 (Phase 2)
-  - Added Tier 1 tools (zoxide, fzf, eza, bat, fd, ripgrep)
-  - PSFzf module integration
-  - Alias system with learning-first approach
-- **2026-01-08**: v0.1.0 (Phase 1)
-  - Initial security audit and implementation
-  - Starship prompt setup
-  - PSReadLine configuration
-  - Profile hook system
-  - No admin privileges required
-
 ## Reporting Security Issues
 
 If you discover a security vulnerability in MyPowerShell:
