@@ -5,6 +5,15 @@ All notable changes to MyPowerShell will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.1] - 2026-01-16
+
+### Fixed
+- **Installer Optional Tools Output**: Fixed cosmetic bugs in optional tool installation
+  - Removed duplicate "Installing X via scoop..." messages (yazi, tealdeer, glow)
+  - Suppressed stray "True" output from `Install-ScoopPackage` return values
+  - Fixed jq and gsudo silent installations - now use helper functions with proper success messages
+  - Made summary text consistent - removed "(if installed)" from optional tools list
+
 ## [1.4.0] - 2026-01-16
 
 ### Fixed
