@@ -10,9 +10,9 @@ $MyPowerShellRoot = $PSScriptRoot | Split-Path -Parent
 # ============================================================================
 # Check all tools in a single Get-Command call (~180ms saved)
 # Force array with @() to ensure consistent behavior
-$foundTools = @(Get-Command -Name starship,zoxide,fzf,eza,bat,fd,rg,lazygit,yazi,glow -ErrorAction SilentlyContinue)
+$foundTools = @(Get-Command -Name starship,zoxide,fzf,eza,bat,fd,rg,lazygit,yazi,glow,jq,gsudo -ErrorAction SilentlyContinue)
 $script:ToolsAvailable = @{}
-foreach ($tool in @('starship','zoxide','fzf','eza','bat','fd','rg','lazygit','yazi','glow')) {
+foreach ($tool in @('starship','zoxide','fzf','eza','bat','fd','rg','lazygit','yazi','glow','jq','gsudo')) {
     # Match with or without .exe extension (Windows compatibility)
     $script:ToolsAvailable[$tool] = ($foundTools.Name -contains $tool) -or ($foundTools.Name -contains "$tool.exe")
 }

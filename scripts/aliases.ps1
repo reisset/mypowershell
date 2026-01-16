@@ -89,6 +89,21 @@ if ($ToolsAvailable.lazygit) {
 # Standard: Get-PSDrive, or Windows Explorer properties
 
 # ============================================================================
+# System Utilities
+# ============================================================================
+
+# gsudo - sudo for Windows (elevate commands without new window)
+if ($ToolsAvailable.gsudo) {
+    Set-Alias -Name sudo -Value gsudo -ErrorAction SilentlyContinue
+}
+
+# jq - JSON processor with convenience function
+if ($ToolsAvailable.jq) {
+    # Pretty print JSON from clipboard
+    function jqc { Get-Clipboard | jq $args }
+}
+
+# ============================================================================
 # Quick Reference Guide
 # ============================================================================
 function tools {

@@ -364,6 +364,32 @@ if (Confirm "Install tealdeer? (Quick command examples via 'tldr')" -DefaultYes 
     }
 }
 
+# Glow - Markdown renderer (fixes incomplete feature)
+if (Confirm "Install glow? (Beautiful markdown viewer)" -DefaultYes $false) {
+    Write-Status "Installing glow via scoop..." -Type Info
+    Install-ScoopPackage "glow"
+}
+
+# jq - JSON processor (essential for API/config work)
+if (Confirm "Install jq? (JSON processor for parsing/filtering)" -DefaultYes $false) {
+    Write-Status "Installing jq..." -Type Info
+    $jqInstalled = winget install jqlang.jq --accept-source-agreements --accept-package-agreements 2>$null
+    if ($LASTEXITCODE -ne 0) {
+        Write-Status "winget failed, trying scoop..." -Type Warning
+        Install-ScoopPackage "jq"
+    }
+}
+
+# gsudo - sudo for Windows (elevate commands without new window)
+if (Confirm "Install gsudo? (sudo for Windows - elevate commands)" -DefaultYes $false) {
+    Write-Status "Installing gsudo..." -Type Info
+    $gsudoInstalled = winget install gerardog.gsudo --accept-source-agreements --accept-package-agreements 2>$null
+    if ($LASTEXITCODE -ne 0) {
+        Write-Status "winget failed, trying scoop..." -Type Warning
+        Install-ScoopPackage "gsudo"
+    }
+}
+
 # ============================================================================
 # 8. Install Nerd Font (JetBrainsMono)
 # ============================================================================
@@ -565,6 +591,9 @@ Write-Host ""
 Write-Host "  Optional Tools:" -ForegroundColor White
 Write-Host "    • yazi - Terminal file manager (y)" -ForegroundColor Gray
 Write-Host "    • tealdeer - Quick command examples (tldr)" -ForegroundColor Gray
+Write-Host "    • glow - Markdown viewer (if installed)" -ForegroundColor Gray
+Write-Host "    • jq - JSON processor (if installed)" -ForegroundColor Gray
+Write-Host "    • gsudo - sudo for Windows (if installed)" -ForegroundColor Gray
 Write-Host ""
 Write-Host "  Visual Enhancements:" -ForegroundColor White
 Write-Host "    • JetBrainsMono Nerd Font (if installed)" -ForegroundColor Gray
