@@ -5,7 +5,7 @@ A high-performance PowerShell environment for Windows 11. Built to enhance produ
 ## The Goods
 
 - **Starship Prompt:** Fast, informative, and git-aware.
-- **Modern Toolset:** Includes `zoxide` (smart cd), `eza` (modern ls), `bat`, `fzf`, `lazygit`, `delta`, and more.
+- **Modern Toolset:** Includes `zoxide` (smart cd), `eza` (modern ls), `bat`, `fzf`, `lazygit`, `delta`, `jq`, `glow`, `gsudo`, and more.
 - **Muscle Memory Safe:** Standard PowerShell commands still work - you won't get lost.
 - **Visual Polish:** Tokyo Night theme, JetBrainsMono Nerd Font, syntax-highlighted diffs.
 - **Fast Startup:** ~150-200ms profile load time with aggressive optimizations.
@@ -94,6 +94,9 @@ Ctrl+R       # Fuzzy history search
 dust         # Visual disk usage
 y            # Yazi file manager
 tldr cmd     # Quick command examples
+glow file.md # Beautiful markdown viewer
+jq '.key' f  # Parse JSON files
+sudo cmd     # Elevate commands (gsudo)
 ```
 
 ## License

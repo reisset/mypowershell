@@ -5,6 +5,24 @@ All notable changes to MyPowerShell will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2026-01-16
+
+### Added
+- **glow**: Markdown viewer for beautiful terminal rendering (completes incomplete feature)
+- **jq**: JSON processor with `jqc` convenience function for parsing clipboard JSON
+- **gsudo**: Windows elevation tool providing `sudo` alias for elevating commands without new window
+
+### Fixed
+- **glow Integration**: Fixed bug where glow was checked in profile but never offered for installation
+  - Added to optional tools section in installer alongside yazi/tealdeer
+  - Added to uninstaller removal logic
+  - `tools` command now uses glow for pretty markdown rendering when available
+
+### Changed
+- Updated installer to prompt for glow, jq, and gsudo installation
+- Updated profile batch check to include jq and gsudo
+- Updated TOOLS.md with new tool documentation and usage examples
+
 ## [1.2.4] - 2026-01-09
 
 ### Fixed
