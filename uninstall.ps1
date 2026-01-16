@@ -365,12 +365,15 @@ if (Confirm "Uninstall Dev tools (lazygit, delta, dust)?") {
 Write-Host ""
 
 # Optional Tools
-if (Confirm "Uninstall Optional tools (yazi, tealdeer)?") {
+if (Confirm "Uninstall Optional tools (yazi, tealdeer, glow, jq, gsudo)?") {
     Log-Info "Uninstalling Optional tools..."
 
     $optionalTools = @(
         @{Name='yazi'; Scoop='yazi'},
-        @{Name='tealdeer'; Scoop='tealdeer'}
+        @{Name='tealdeer'; Scoop='tealdeer'},
+        @{Name='glow'; Scoop='glow'},
+        @{Name='jq'; Scoop='jq'},
+        @{Name='gsudo'; Scoop='gsudo'}
     )
 
     foreach ($tool in $optionalTools) {

@@ -4,7 +4,7 @@ Welcome to the **Learning-First** toolset for Windows. This guide helps you navi
 
 ## 💡 Quick Access
 
-- **tools** - View this guide with syntax highlighting (uses bat if available)
+- **tools** - View this guide (uses bat or glow if available)
 - **Get-Command** - PowerShell's built-in command discovery
 - **Get-Help <command>** - PowerShell's help system
 
@@ -26,18 +26,21 @@ MyPowerShell adds powerful modern tools but **does not replace** PowerShell fund
 | **fzf** | `Ctrl+t`, `Ctrl+r` | Manual search | Fuzzy finder with live previews. |
 | **eza** | `ls`, `ll`, `la`, `lt` | `Get-ChildItem`, `dir` | Beautiful file listings with icons and colors. |
 | **bat** | `cat` | `Get-Content`, `gc` | Syntax highlighting for file viewing. |
+| **glow** | `glow <file.md>` | `Get-Content` | Beautiful markdown rendering in terminal. |
 | **ripgrep** | `rg`, `grep` | `Select-String`, `sls` | Ultra-fast text search across files. |
 
 ### 2. System Monitoring & Analysis
 | Modern Tool | Command | PowerShell Equivalent | Why use it? |
 | :--- | :--- | :--- | :--- |
 | **dust** | `dust` | `Get-PSDrive` | Visual tree of disk usage with colors. |
+| **gsudo** | `sudo <command>` | `Start-Process -Verb RunAs` | Elevate commands without opening new window. |
 
 ### 3. Development Tools
 | Modern Tool | Command | Description |
 | :--- | :--- | :--- |
 | **lazygit** | `lg` | Incredible TUI for managing git repos, commits, and branches. |
 | **delta** | `git diff` | Syntax highlighting and side-by-side diffs for Git. |
+| **jq** | `jq`, `jqc` | JSON processor - parse, filter, transform JSON data. `jqc` reads from clipboard. |
 | **starship** | Auto-loads | Cross-shell prompt with git status and language versions. |
 
 ---
@@ -73,6 +76,12 @@ MyPowerShell adds powerful modern tools but **does not replace** PowerShell fund
 - `rg <pattern>` - Fast text search in files
 - `Ctrl+R` - Fuzzy search command history
 - `Ctrl+T` - Fuzzy find files in current directory
+
+### Development & Utilities
+- `jq '.key' file.json` - Parse and filter JSON files
+- `jqc '.key'` - Parse JSON from clipboard
+- `glow README.md` - View markdown files with beautiful formatting
+- `sudo notepad C:\Windows\System32\hosts` - Elevate commands without new window
 
 ---
 
