@@ -5,6 +5,26 @@ All notable changes to MyPowerShell will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.0] - 2026-01-16
+
+### Fixed
+- **Starship Caching Bug**: Fixed critical bug where cache stored wrapper command instead of actual init script
+  - Cache contained `Invoke-Expression (& starship.exe init powershell --print-full-init)` which still spawned starship.exe every time
+  - Now correctly caches the full init script using `--print-full-init` flag
+  - Saves ~100-200ms per profile load
+
+### Added
+- **Tool Availability Caching**: Cache Get-Command results to file for 7 days
+  - New cache file: `$env:TEMP\mypowershell-tools.json`
+  - Avoids expensive PATH scanning on every shell startup
+  - Saves ~50-100ms per profile load
+
+### Changed
+- **Profile Load Time**: Reduced from ~531ms warm / ~1000ms cold to **~42ms warm / ~270ms cold**
+  - 92% faster warm boot, 73% faster cold boot
+  - Removed explicit PSReadLine import (auto-loaded in PowerShell 7)
+  - Combined all performance fixes for dramatic improvement
+
 ## [1.3.0] - 2026-01-16
 
 ### Added

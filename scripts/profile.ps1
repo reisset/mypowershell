@@ -1,6 +1,6 @@
 # MyPowerShell Profile
 # High-performance PowerShell environment inspired by MyBash
-# Version: 1.2.2 (Bug fix: Cache error handling + fallback)
+# Version: 1.4.0 (Performance: Fixed Starship cache, added tool cache, removed PSReadLine import)
 
 # Set root directory
 $MyPowerShellRoot = $PSScriptRoot | Split-Path -Parent
@@ -8,17 +8,48 @@ $MyPowerShellRoot = $PSScriptRoot | Split-Path -Parent
 # ============================================================================
 # 0. Batch Command Availability Check (Performance Optimization)
 # ============================================================================
-# Check all tools in a single Get-Command call (~180ms saved)
-# Force array with @() to ensure consistent behavior
-$foundTools = @(Get-Command -Name starship,zoxide,fzf,eza,bat,fd,rg,lazygit,yazi,glow,jq,gsudo -ErrorAction SilentlyContinue)
-$script:ToolsAvailable = @{}
-foreach ($tool in @('starship','zoxide','fzf','eza','bat','fd','rg','lazygit','yazi','glow','jq','gsudo')) {
-    # Match with or without .exe extension (Windows compatibility)
-    $script:ToolsAvailable[$tool] = ($foundTools.Name -contains $tool) -or ($foundTools.Name -contains "$tool.exe")
+# Cache tool availability to avoid expensive Get-Command calls (~50-100ms saved)
+$toolCachePath = "$env:TEMP\mypowershell-tools.json"
+$toolCacheMaxAge = 7  # days
+$cacheValid = $false
+
+# Try to load from cache if it exists and is fresh
+if ([System.IO.File]::Exists($toolCachePath)) {
+    $cacheAge = ((Get-Date) - [System.IO.File]::GetLastWriteTime($toolCachePath)).TotalDays
+    if ($cacheAge -lt $toolCacheMaxAge) {
+        try {
+            $cacheData = [System.IO.File]::ReadAllText($toolCachePath) | ConvertFrom-Json
+            $script:ToolsAvailable = @{}
+            foreach ($prop in $cacheData.PSObject.Properties) {
+                $script:ToolsAvailable[$prop.Name] = $prop.Value
+            }
+            $cacheValid = $true
+        } catch {
+            # Cache corrupted, will regenerate
+        }
+    }
 }
 
-# Check module availability (separate from commands)
-$script:ToolsAvailable['PSFzf'] = $null -ne (Get-Module -ListAvailable -Name PSFzf)
+# If cache invalid or missing, check tools and save to cache
+if (-not $cacheValid) {
+    # Check all tools in a single Get-Command call
+    $foundTools = @(Get-Command -Name starship,zoxide,fzf,eza,bat,fd,rg,lazygit,yazi,glow,jq,gsudo -ErrorAction SilentlyContinue)
+    $script:ToolsAvailable = @{}
+    foreach ($tool in @('starship','zoxide','fzf','eza','bat','fd','rg','lazygit','yazi','glow','jq','gsudo')) {
+        # Match with or without .exe extension (Windows compatibility)
+        $script:ToolsAvailable[$tool] = ($foundTools.Name -contains $tool) -or ($foundTools.Name -contains "$tool.exe")
+    }
+
+    # Check module availability (separate from commands)
+    $script:ToolsAvailable['PSFzf'] = $null -ne (Get-Module -ListAvailable -Name PSFzf)
+
+    # Save to cache
+    try {
+        $script:ToolsAvailable | ConvertTo-Json | Set-Content $toolCachePath -Force -ErrorAction Stop
+    } catch {
+        # Cache save failed, not critical
+    }
+}
 
 # ============================================================================
 # 1. Source Aliases (with tool availability passed)
@@ -43,7 +74,7 @@ if ($ToolsAvailable.starship) {
     # Regenerate cache if it doesn't exist or is older than 7 days
     if ($cacheAge -gt 7) {
         try {
-            $initOutput = starship init powershell
+            $initOutput = starship init powershell --print-full-init
             if ($initOutput) {
                 $initOutput | Set-Content $starshipCache -Force -ErrorAction Stop
             }
@@ -56,7 +87,7 @@ if ($ToolsAvailable.starship) {
     if ([System.IO.File]::Exists($starshipCache)) {
         . $starshipCache
     } else {
-        Invoke-Expression (&starship init powershell)
+        Invoke-Expression (&starship init powershell --print-full-init)
     }
 }
 
@@ -64,10 +95,8 @@ if ($ToolsAvailable.starship) {
 # 3. PSReadLine Enhancements (History & Prediction)
 # ============================================================================
 # Only configure PSReadLine in interactive sessions
-# Note: PSReadLine is built-in to PowerShell 5.1+, no availability check needed
+# Note: PSReadLine is auto-loaded in PowerShell 7+, no explicit import needed
 if ($Host.UI.RawUI) {
-    Import-Module PSReadLine -ErrorAction SilentlyContinue
-
     # Predictive IntelliSense from history (only if supported)
     try {
         Set-PSReadLineOption -PredictionSource History -PredictionViewStyle ListView -ErrorAction Stop
