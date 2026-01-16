@@ -6,7 +6,7 @@
     Installs modern CLI tools and configurations inspired by MyBash for Linux.
     Installs modern CLI tools (starship, zoxide, fzf, eza, bat, fd, ripgrep, lazygit, delta, dust) with Tokyo Night theme
 .NOTES
-    Version: 1.2.4
+    Version: 1.4.1
     No administrator privileges required
 #>
 
@@ -349,14 +349,12 @@ Write-Status "Optional tools enhance your experience but aren't required." -Type
 
 # Yazi - Modern terminal file manager
 if (Confirm "Install yazi file manager? (Modern TUI file browser)" -DefaultYes $false) {
-    Write-Status "Installing yazi via scoop..." -Type Info
-    Install-ScoopPackage "yazi"
+    Install-ScoopPackage "yazi" | Out-Null
 }
 
 # Tealdeer - Fast tldr client (command examples)
 if (Confirm "Install tealdeer? (Quick command examples via 'tldr')" -DefaultYes $false) {
-    Write-Status "Installing tealdeer via scoop..." -Type Info
-    Install-ScoopPackage "tealdeer"
+    Install-ScoopPackage "tealdeer" | Out-Null
 
     if (Test-CommandExists 'tldr') {
         Write-Status "Updating tealdeer cache..." -Type Info
@@ -366,27 +364,28 @@ if (Confirm "Install tealdeer? (Quick command examples via 'tldr')" -DefaultYes 
 
 # Glow - Markdown renderer (fixes incomplete feature)
 if (Confirm "Install glow? (Beautiful markdown viewer)" -DefaultYes $false) {
-    Write-Status "Installing glow via scoop..." -Type Info
-    Install-ScoopPackage "glow"
+    Install-ScoopPackage "glow" | Out-Null
 }
 
 # jq - JSON processor (essential for API/config work)
 if (Confirm "Install jq? (JSON processor for parsing/filtering)" -DefaultYes $false) {
-    Write-Status "Installing jq..." -Type Info
-    $jqInstalled = winget install jqlang.jq --accept-source-agreements --accept-package-agreements 2>$null
-    if ($LASTEXITCODE -ne 0) {
-        Write-Status "winget failed, trying scoop..." -Type Warning
-        Install-ScoopPackage "jq"
+    $wingetSuccess = $false
+    if (Test-CommandExists 'winget') {
+        $wingetSuccess = Install-WingetPackage -Id "jqlang.jq" -CommandName "jq"
+    }
+    if (-not $wingetSuccess -and (Test-CommandExists 'scoop')) {
+        Install-ScoopPackage "jq" | Out-Null
     }
 }
 
 # gsudo - sudo for Windows (elevate commands without new window)
 if (Confirm "Install gsudo? (sudo for Windows - elevate commands)" -DefaultYes $false) {
-    Write-Status "Installing gsudo..." -Type Info
-    $gsudoInstalled = winget install gerardog.gsudo --accept-source-agreements --accept-package-agreements 2>$null
-    if ($LASTEXITCODE -ne 0) {
-        Write-Status "winget failed, trying scoop..." -Type Warning
-        Install-ScoopPackage "gsudo"
+    $wingetSuccess = $false
+    if (Test-CommandExists 'winget') {
+        $wingetSuccess = Install-WingetPackage -Id "gerardog.gsudo" -CommandName "gsudo"
+    }
+    if (-not $wingetSuccess -and (Test-CommandExists 'scoop')) {
+        Install-ScoopPackage "gsudo" | Out-Null
     }
 }
 
@@ -591,9 +590,9 @@ Write-Host ""
 Write-Host "  Optional Tools:" -ForegroundColor White
 Write-Host "    • yazi - Terminal file manager (y)" -ForegroundColor Gray
 Write-Host "    • tealdeer - Quick command examples (tldr)" -ForegroundColor Gray
-Write-Host "    • glow - Markdown viewer (if installed)" -ForegroundColor Gray
-Write-Host "    • jq - JSON processor (if installed)" -ForegroundColor Gray
-Write-Host "    • gsudo - sudo for Windows (if installed)" -ForegroundColor Gray
+Write-Host "    • glow - Markdown viewer" -ForegroundColor Gray
+Write-Host "    • jq - JSON processor" -ForegroundColor Gray
+Write-Host "    • gsudo - sudo for Windows" -ForegroundColor Gray
 Write-Host ""
 Write-Host "  Visual Enhancements:" -ForegroundColor White
 Write-Host "    • JetBrainsMono Nerd Font (if installed)" -ForegroundColor Gray
