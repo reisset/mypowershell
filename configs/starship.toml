@@ -1,169 +1,63 @@
-# Performance: Timeouts prevent slow prompts in edge cases
-scan_timeout = 30
-command_timeout = 500
+# Starship Config v2.0
+# Two-line prompt with OS icon + username
+# git_status DISABLED for performance
 
-format = """\
-[╭╴](fg:arrow)\
-$username\
-$os\
-$git_branch\
-(\
-    at \
-    $directory\
-)\
-$cmd_duration\
-(\
-    via \
-    $python\
-    $conda\
-    $nodejs\
-    $c\
-    $rust\
-    $java\
-)
-[╰─](fg:arrow)$character\
-"""
-# Add the modules you need
+format = """
+[┌─](bold cyan) $os $username in $directory$git_branch${custom.docker}$python$cmd_duration
+[└─](bold cyan)$character"""
 
-# Disable the blank line at the start of the prompt
 add_newline = true
 
-
-palette = "normal"
-
-
-[palettes.normal]
-arrow = "#333533"
-os = "#16f4d0"
-os_admin = "#e4ff1a"
-directory = "#9ffff5"
-time = "#bdfffd"
-node = "#a5e6ba"
-git = "#f17f29"
-git_status = "#DFEBED"
-python = "#edf67d"
-conda = "#70e000"
-java = "#F86279"
-rust = "#ffdac6"
-clang = "#caf0f8"
-duration = "#ce4257"
-text_color = "#EDF2F4"
-text_light = "#26272A"
-
-# I disabled some modules (Rust, Java...) since some things aren't installed in my machine, enable them if you need.
-
-[username]
-style_user = 'bold os'
-style_root = 'bold os_admin'
-format = '[  $user](fg:$style) '
-disabled = false
-show_always = true
+[character]
+success_symbol = "[❯](bold green)"
+error_symbol = "[❯](bold red)"
 
 [os]
-format = "on [($name)]($style) "
-style = "bold blue"
-disabled = true
+disabled = false
+format = "[$symbol]($style)"
+style = "bold white"
 
 [os.symbols]
-Alpine = " "
-Arch = " "
-Debian = " "
-EndeavourOS = " "
-Fedora = " "
-Linux = " "
-Macos = " "
-Manjaro = " "
-Mint = " "
-NixOS = " "
-openSUSE = " "
-Pop = " "
-SUSE = " "
-Ubuntu = " "
-Windows = "󰍲 "
+Windows = ""
 
-[character]
-success_symbol = "[󰍟](fg:arrow)"
-error_symbol = "[󰍟](fg:red)"
+[username]
+show_always = true
+format = "[$user]($style)"
+style_user = "bold green"
 
 [directory]
-format = "[$path](bold $style)[$read_only]($read_only_style) "
-truncation_length = 2
-style = "fg:directory"
-read_only_style = "fg:directory"
-before_repo_root_style = "fg:directory"
-truncation_symbol = "…/"
+truncation_length = 3
 truncate_to_repo = true
-read_only ="  "
-
-[time]
-disabled = true
-format = "at [󱑈 $time]($style)"
-time_format = "%H:%M"
-style = "bold fg:time"
-
-[cmd_duration]
-format = "took [ $duration]($style) "
-style = "bold fg:duration"
-min_time = 500
+style = "bold blue"
+read_only = " 󰌾"
 
 [git_branch]
-format = "via [$symbol$branch]($style) "
-style = "bold fg:git"
+format = " on [$symbol$branch]($style)"
 symbol = " "
+style = "bold purple"
 
 [git_status]
-format = '[ $all_status$ahead_behind ]($style)'
-style = "fg:text_color bg:git"
 disabled = true
 
-[docker_context]
-disabled=true
-symbol = " "
-
-[package]
-disabled=true
-
-[fill]
-symbol = " "
-
-[nodejs]
-format = "[ $symbol$version ]($style)"
-style = "bg:node fg:text_light"
-symbol = " "
-version_format = "${raw}"
-disabled=false
+[custom.docker]
+description = "Shows docker icon in directories with compose/Dockerfile"
+command = "echo docker"
+files = ["compose.yaml", "compose.yml", "docker-compose.yaml", "docker-compose.yml", "Dockerfile"]
+format = "via [](bold blue) "
 
 [python]
-disabled=false
-format = '[ ${symbol}${pyenv_prefix}(${version})( \($virtualenv\)) ]($style)'
-symbol = " "
-version_format = "${raw}"
-style = "bg:python fg:text_light"
+format = '[ $virtualenv]($style)'
+style = "yellow"
+detect_extensions = []
+detect_files = []
 
-[conda]
-format = "[ $symbol$environment ]($style)"
-style = "bg:conda fg:text_light"
-ignore_base = false
-disabled = false
-symbol = " "
-
-[java]
-format = "[ $symbol$version ]($style)"
-style = "bg:java fg:text_light"
-version_format = "${raw}"
-symbol = " "
+[nodejs]
 disabled = true
 
-[c]
-format = "[ $symbol($version(-$name)) ]($style)"
-style = "bg:clang fg:text_light"
-symbol = " "
-version_format = "${raw}"
-disabled=true
+[package]
+disabled = true
 
-[rust]
-format ="[ $symbol$version ]($style)"
-style = "bg:rust fg:text_light"
-symbol = " "
-version_format = "${raw}"
-disabled=true
+[cmd_duration]
+min_time = 2000
+format = " took [$duration]($style)"
+style = "bold yellow"

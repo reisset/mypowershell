@@ -1,6 +1,6 @@
 # MyPowerShell Profile
 # High-performance PowerShell environment inspired by MyBash
-# Version: 1.4.0 (Performance: Fixed Starship cache, added tool cache, removed PSReadLine import)
+# Version: 2.0.0 (Speedier: Stripped PSReadLine, banner, unused tools)
 
 # Set root directory
 $MyPowerShellRoot = $PSScriptRoot | Split-Path -Parent
@@ -33,9 +33,9 @@ if ([System.IO.File]::Exists($toolCachePath)) {
 # If cache invalid or missing, check tools and save to cache
 if (-not $cacheValid) {
     # Check all tools in a single Get-Command call
-    $foundTools = @(Get-Command -Name starship,zoxide,fzf,eza,bat,fd,rg,lazygit,yazi,glow,jq,gsudo -ErrorAction SilentlyContinue)
+    $foundTools = @(Get-Command -Name starship,zoxide,fzf,eza,bat,fd,rg,yazi -ErrorAction SilentlyContinue)
     $script:ToolsAvailable = @{}
-    foreach ($tool in @('starship','zoxide','fzf','eza','bat','fd','rg','lazygit','yazi','glow','jq','gsudo')) {
+    foreach ($tool in @('starship','zoxide','fzf','eza','bat','fd','rg','yazi')) {
         # Match with or without .exe extension (Windows compatibility)
         $script:ToolsAvailable[$tool] = ($foundTools.Name -contains $tool) -or ($foundTools.Name -contains "$tool.exe")
     }
@@ -92,28 +92,7 @@ if ($ToolsAvailable.starship) {
 }
 
 # ============================================================================
-# 3. PSReadLine Enhancements (History & Prediction)
-# ============================================================================
-# Only configure PSReadLine in interactive sessions
-# Note: PSReadLine is auto-loaded in PowerShell 7+, no explicit import needed
-if ($Host.UI.RawUI) {
-    # Predictive IntelliSense from history (only if supported)
-    try {
-        Set-PSReadLineOption -PredictionSource History -PredictionViewStyle ListView -ErrorAction Stop
-    } catch {
-        # Prediction not supported in this terminal, skip
-    }
-
-    # Other PSReadLine options (combined for performance)
-    Set-PSReadLineOption -EditMode Emacs -BellStyle None -ErrorAction SilentlyContinue
-
-    # Better history search
-    Set-PSReadLineKeyHandler -Key UpArrow -Function HistorySearchBackward -ErrorAction SilentlyContinue
-    Set-PSReadLineKeyHandler -Key DownArrow -Function HistorySearchForward -ErrorAction SilentlyContinue
-}
-
-# ============================================================================
-# 4. Zoxide (Smart Directory Navigation - Cached Init)
+# 3. Zoxide (Smart Directory Navigation - Cached Init)
 # ============================================================================
 if ($ToolsAvailable.zoxide) {
     # Cache init script for faster startup (~50ms saved)
@@ -143,7 +122,7 @@ if ($ToolsAvailable.zoxide) {
 }
 
 # ============================================================================
-# 5. FZF + PSFzf (Lazy-loaded on first use for faster startup)
+# 4. FZF + PSFzf (Lazy-loaded on first use for faster startup)
 # ============================================================================
 if ($ToolsAvailable.fzf) {
     # PSFzf module lazy-loaded only when needed
@@ -172,7 +151,7 @@ if ($ToolsAvailable.fzf) {
 }
 
 # ============================================================================
-# 6. Yazi File Manager Wrapper (allows cwd change)
+# 5. Yazi File Manager Wrapper (allows cwd change)
 # ============================================================================
 if ($ToolsAvailable.yazi) {
     function y {
@@ -184,17 +163,4 @@ if ($ToolsAvailable.yazi) {
         }
         Remove-Item -Path $tmp -ErrorAction SilentlyContinue
     }
-}
-
-# ============================================================================
-# 7. Welcome Banner (once per session)
-# ============================================================================
-if ($Host.UI.RawUI -and -not $env:MYPOWERSHELL_WELCOME_SHOWN) {
-    $asciiPath = Join-Path $MyPowerShellRoot "asciiart.txt"
-    if ([System.IO.File]::Exists($asciiPath)) {
-        [System.IO.File]::ReadAllLines($asciiPath) | Write-Host -ForegroundColor Cyan
-        Write-Host ""
-        Write-Host "Type 'tools' for quick reference" -ForegroundColor DarkGray
-    }
-    $env:MYPOWERSHELL_WELCOME_SHOWN = "1"
 }

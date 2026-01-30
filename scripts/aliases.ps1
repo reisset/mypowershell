@@ -1,6 +1,6 @@
 # scripts/aliases.ps1
 # MyPowerShell Aliases - Modern CLI tool shortcuts
-# Version: 1.2.0 (Advanced Performance Optimizations)
+# Version: 2.0.0 (Speedier: Minimal aliases for kept tools only)
 
 # ============================================================================
 # MODERN TOOL ALIASES (Learning-First Approach)
@@ -64,73 +64,3 @@ function .... { Set-Location ..\..\.. }
 if ($ToolsAvailable.zoxide) {
     function zi { z -i $args }  # Interactive directory picker
 }
-
-# ============================================================================
-# Git Shortcuts
-# ============================================================================
-Set-Alias -Name g -Value git -ErrorAction SilentlyContinue
-function gs { git status $args }
-function ga { git add $args }
-function gc { git commit $args }
-function gp { git push $args }
-function gl { git pull $args }
-function gd { git diff $args }
-
-# ============================================================================
-# Development Tools
-# ============================================================================
-
-# LazyGit - Git TUI
-if ($ToolsAvailable.lazygit) {
-    Set-Alias -Name lg -Value lazygit -ErrorAction SilentlyContinue
-}
-
-# Dust - Disk usage (no alias needed, command is already 'dust')
-# Standard: Get-PSDrive, or Windows Explorer properties
-
-# ============================================================================
-# System Utilities
-# ============================================================================
-
-# gsudo - sudo for Windows (elevate commands without new window)
-if ($ToolsAvailable.gsudo) {
-    Set-Alias -Name sudo -Value gsudo -ErrorAction SilentlyContinue
-}
-
-# jq - JSON processor with convenience function
-if ($ToolsAvailable.jq) {
-    # Pretty print JSON from clipboard
-    function jqc { Get-Clipboard | jq $args }
-}
-
-# ============================================================================
-# Quick Reference Guide
-# ============================================================================
-function tools {
-    $MyPowerShellRoot = $PSScriptRoot | Split-Path -Parent
-    $toolsPath = Join-Path $MyPowerShellRoot "docs\TOOLS.md"
-
-    if (Test-Path $toolsPath) {
-        # Use bat if available, otherwise fallback to Get-Content
-        if ($ToolsAvailable.bat) {
-            bat $toolsPath
-        } elseif ($ToolsAvailable.glow) {
-            glow $toolsPath
-        } else {
-            Get-Content $toolsPath
-        }
-    } else {
-        Write-Host "TOOLS.md not found at $toolsPath" -ForegroundColor Yellow
-        Write-Host "Run the full installer to get documentation." -ForegroundColor Gray
-    }
-}
-
-# ============================================================================
-# OPTIONAL: POWER MODE (Uncomment to fully replace standard commands)
-# WARNING: This breaks muscle memory for vanilla Windows systems!
-# ============================================================================
-# Remove-Alias -Name cd -Force -ErrorAction SilentlyContinue
-# Set-Alias -Name cd -Value z -Option AllScope
-#
-# Note: Other aliases (grep, find, cat) are already set above
-# ============================================================================

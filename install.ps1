@@ -4,9 +4,9 @@
     MyPowerShell Installer - High-performance PowerShell environment for Windows
 .DESCRIPTION
     Installs modern CLI tools and configurations inspired by MyBash for Linux.
-    Installs modern CLI tools (starship, zoxide, fzf, eza, bat, fd, ripgrep, lazygit, delta, dust) with Tokyo Night theme
+    Installs core CLI tools (starship, zoxide, fzf, eza, bat, fd, ripgrep) with Tokyo Night theme
 .NOTES
-    Version: 1.4.1
+    Version: 2.0.0
     No administrator privileges required
 #>
 
@@ -310,87 +310,19 @@ foreach ($module in $modules) {
 }
 
 # ============================================================================
-# 6. Install Tier 2 Tools (Development Tools)
-# ============================================================================
-
-Write-Host ""
-Write-Status "Installing Tier 2 tools (development tools)..." -Type Info
-
-# Define Tier 2 tools
-$tier2WingetTools = @(
-    @{Id = "JesseDuffield.Lazygit"; Name = "lazygit"; Description = "Git TUI" }
-)
-
-$tier2ScoopTools = @(
-    @{Name = "delta"; Description = "Git diff viewer" },
-    @{Name = "dust"; Description = "Disk usage analyzer" }
-)
-
-# Install via winget
-if (Test-CommandExists 'winget') {
-    foreach ($tool in $tier2WingetTools) {
-        Install-WingetPackage -Id $tool.Id -CommandName $tool.Name | Out-Null
-    }
-}
-
-# Install via scoop
-if (Test-CommandExists 'scoop') {
-    foreach ($tool in $tier2ScoopTools) {
-        Install-ScoopPackage -Name $tool.Name | Out-Null
-    }
-}
-
-# ============================================================================
-# 7. Install Optional Tools (prompted)
+# 6. Install Optional Tools (prompted)
 # ============================================================================
 
 Write-Host ""
 Write-Status "Optional tools enhance your experience but aren't required." -Type Info
 
-# Yazi - Modern terminal file manager
+# Yazi - Modern terminal file manager (dependency: ripgrep, fzf, zoxide)
 if (Confirm "Install yazi file manager? (Modern TUI file browser)" -DefaultYes $false) {
     Install-ScoopPackage "yazi" | Out-Null
 }
 
-# Tealdeer - Fast tldr client (command examples)
-if (Confirm "Install tealdeer? (Quick command examples via 'tldr')" -DefaultYes $false) {
-    Install-ScoopPackage "tealdeer" | Out-Null
-
-    if (Test-CommandExists 'tldr') {
-        Write-Status "Updating tealdeer cache..." -Type Info
-        tldr --update 2>&1 | Out-Null
-    }
-}
-
-# Glow - Markdown renderer (fixes incomplete feature)
-if (Confirm "Install glow? (Beautiful markdown viewer)" -DefaultYes $false) {
-    Install-ScoopPackage "glow" | Out-Null
-}
-
-# jq - JSON processor (essential for API/config work)
-if (Confirm "Install jq? (JSON processor for parsing/filtering)" -DefaultYes $false) {
-    $wingetSuccess = $false
-    if (Test-CommandExists 'winget') {
-        $wingetSuccess = Install-WingetPackage -Id "jqlang.jq" -CommandName "jq"
-    }
-    if (-not $wingetSuccess -and (Test-CommandExists 'scoop')) {
-        Install-ScoopPackage "jq" | Out-Null
-    }
-}
-
-# gsudo - sudo for Windows (elevate commands without new window)
-if (Confirm "Install gsudo? (sudo for Windows - elevate commands)" -DefaultYes $false) {
-    $wingetSuccess = $false
-    if (Test-CommandExists 'winget') {
-        $wingetSuccess = Install-WingetPackage -Id "gerardog.gsudo" -CommandName "gsudo"
-    }
-    if (-not $wingetSuccess -and (Test-CommandExists 'scoop')) {
-        Install-ScoopPackage "gsudo" | Out-Null
-    }
-}
-
 # ============================================================================
-# 8. Install Nerd Font (JetBrainsMono)
+# 7. Install Nerd Font (JetBrainsMono)
 # ============================================================================
 
 Write-Host ""
@@ -416,7 +348,7 @@ if (Confirm "Install JetBrainsMono Nerd Font? (Required for icons)") {
 }
 
 # ============================================================================
-# 9. Configure Windows Terminal (if installed)
+# 8. Configure Windows Terminal (if installed)
 # ============================================================================
 
 Write-Host ""
@@ -478,32 +410,7 @@ if ($wtSettingsPath) {
 }
 
 # ============================================================================
-# 10. Configure Git to use Delta (optional)
-# ============================================================================
-
-Write-Host ""
-if (Test-CommandExists 'git') {
-    if (Test-CommandExists 'delta') {
-        if (Confirm "Configure git to use delta for diffs?" -DefaultYes $false) {
-            $deltaConfigPath = Join-Path $RepoDir "configs\delta.gitconfig"
-            try {
-                git config --global include.path $deltaConfigPath
-                Write-Status "Git configured to use delta for diffs" -Type Success
-            } catch {
-                Write-Status "Failed to configure git delta: $_" -Type Warning
-            }
-        } else {
-            Write-Status "Skipping delta git configuration" -Type Info
-        }
-    } else {
-        Write-Status "Delta not installed, skipping git configuration" -Type Info
-    }
-} else {
-    Write-Status "Git not found, skipping delta configuration" -Type Info
-}
-
-# ============================================================================
-# 11. Deploy Configuration Files
+# 9. Deploy Configuration Files
 # ============================================================================
 
 Write-Host ""
@@ -524,7 +431,7 @@ Copy-Item $starshipSource $starshipDest -Force
 Write-Status "Starship config deployed to $starshipDest" -Type Success
 
 # ============================================================================
-# 12. Setup PowerShell Profile
+# 10. Setup PowerShell Profile
 # ============================================================================
 
 Write-Host ""
@@ -560,7 +467,7 @@ $hookLine
 }
 
 # ============================================================================
-# 13. Installation Complete
+# 11. Installation Complete
 # ============================================================================
 
 Write-Host ""
@@ -573,8 +480,7 @@ Write-Host ""
 
 Write-Host "What was installed:" -ForegroundColor Cyan
 Write-Host "  Core Tools:" -ForegroundColor White
-Write-Host "    • Starship prompt with Tokyo Night theme" -ForegroundColor Gray
-Write-Host "    • Enhanced PSReadLine (history & predictions)" -ForegroundColor Gray
+Write-Host "    • Starship prompt (minimal config)" -ForegroundColor Gray
 Write-Host "    • zoxide - Smart directory navigation (z/zi)" -ForegroundColor Gray
 Write-Host "    • fzf + PSFzf - Fuzzy finder (Ctrl+R, Ctrl+T)" -ForegroundColor Gray
 Write-Host "    • eza - Modern ls with icons (ls/ll/la/lt)" -ForegroundColor Gray
@@ -582,28 +488,17 @@ Write-Host "    • bat - Syntax-highlighted cat" -ForegroundColor Gray
 Write-Host "    • fd - Fast file finder" -ForegroundColor Gray
 Write-Host "    • ripgrep - Fast grep (rg)" -ForegroundColor Gray
 Write-Host ""
-Write-Host "  Development Tools:" -ForegroundColor White
-Write-Host "    • lazygit - Git TUI (lg)" -ForegroundColor Gray
-Write-Host "    • delta - Beautiful git diffs" -ForegroundColor Gray
-Write-Host "    • dust - Disk usage analyzer" -ForegroundColor Gray
-Write-Host ""
 Write-Host "  Optional Tools:" -ForegroundColor White
 Write-Host "    • yazi - Terminal file manager (y)" -ForegroundColor Gray
-Write-Host "    • tealdeer - Quick command examples (tldr)" -ForegroundColor Gray
-Write-Host "    • glow - Markdown viewer" -ForegroundColor Gray
-Write-Host "    • jq - JSON processor" -ForegroundColor Gray
-Write-Host "    • gsudo - sudo for Windows" -ForegroundColor Gray
 Write-Host ""
 Write-Host "  Visual Enhancements:" -ForegroundColor White
 Write-Host "    • JetBrainsMono Nerd Font (if installed)" -ForegroundColor Gray
 Write-Host "    • Windows Terminal Tokyo Night theme (if configured)" -ForegroundColor Gray
-Write-Host "    • ASCII art welcome banner" -ForegroundColor Gray
+Write-Host ""
 Write-Host "Next steps:" -ForegroundColor Cyan
 Write-Host "  1. Restart your terminal or run: " -ForegroundColor Gray -NoNewline
 Write-Host ". `$PROFILE" -ForegroundColor Yellow
-Write-Host "  2. See the ASCII art welcome banner on your next terminal" -ForegroundColor Gray
-Write-Host "  3. Run 'tools' to view the full command reference guide" -ForegroundColor Gray
-Write-Host "  4. Check out README.md for complete documentation" -ForegroundColor Gray
+Write-Host "  2. Check out README.md for complete documentation" -ForegroundColor Gray
 Write-Host ""
 Write-Host "Profile location: $PROFILE" -ForegroundColor DarkGray
 Write-Host ""
