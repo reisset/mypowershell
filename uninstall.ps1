@@ -1,7 +1,7 @@
 # MyPowerShell Uninstaller
 # Removes MyPowerShell configuration and restores default PowerShell environment
 # Inspired by MyBash uninstall patterns
-# Version: 1.1.2 (Fixed: Scoop false-positive detection + output polish)
+# Version: 2.0.0 (Updated for speedier v2.0.0 tool set)
 
 #Requires -Version 5.1
 
@@ -140,40 +140,7 @@ if ($removedCount -gt 0) {
 Write-Host ""
 
 # ============================================================================
-# Step 4: Remove Git Delta Configuration
-# ============================================================================
-
-Log-Info "Step 4: Checking Git delta configuration"
-
-# Check if git is available
-if (Get-Command git -ErrorAction SilentlyContinue) {
-    # Get all include.path entries
-    $gitIncludes = git config --global --get-all include.path 2>$null
-
-    # Find MyPowerShell delta config
-    $deltaConfig = $gitIncludes | Where-Object { $_ -like '*mypowershell*delta.gitconfig*' }
-
-    if ($deltaConfig) {
-        Log-Info "Found git delta configuration: $deltaConfig"
-        if (Confirm "Remove git delta configuration?") {
-            # Remove the specific include path
-            git config --global --unset include.path "$deltaConfig" 2>$null
-            Log-Info "Removed git delta configuration"
-            $script:ActionsPerformed += "Removed git delta config"
-        } else {
-            Log-Info "Skipped git delta config removal"
-        }
-    } else {
-        Log-Warn "No MyPowerShell git delta configuration found"
-    }
-} else {
-    Log-Warn "Git not found, skipping delta configuration check"
-}
-
-Write-Host ""
-
-# ============================================================================
-# Step 5: Remove Windows Terminal Additions
+# Step 4: Remove Windows Terminal Additions
 # ============================================================================
 
 Log-Info "Step 5: Checking Windows Terminal configuration"
@@ -260,10 +227,10 @@ if ($wtSettingsPath -and (Test-Path $wtSettingsPath)) {
 Write-Host ""
 
 # ============================================================================
-# Step 6: Uninstall Tools (Automatic, Prompted)
+# Step 5: Uninstall Tools (Automatic, Prompted)
 # ============================================================================
 
-Log-Info "Step 6: Tool uninstallation"
+Log-Info "Step 5: Tool uninstallation"
 Write-Host ""
 
 $toolsUninstalled = @()
@@ -320,75 +287,20 @@ if (Confirm "Uninstall Core tools (starship, zoxide, fzf, eza, bat, fd, rg)?") {
 
 Write-Host ""
 
-# Dev Tools
-if (Confirm "Uninstall Dev tools (lazygit, delta, dust)?") {
-    Log-Info "Uninstalling Dev tools..."
-
-    $devTools = @(
-        @{Name='lazygit'; Winget='JesseDuffield.Lazygit'; Scoop='lazygit'},
-        @{Name='delta'; Winget=$null; Scoop='delta'},
-        @{Name='dust'; Winget=$null; Scoop='dust'}
-    )
-
-    foreach ($tool in $devTools) {
-        $uninstalled = $false
-
-        if ($tool.Winget) {
-            Write-Host "  Uninstalling $($tool.Name) via winget..." -ForegroundColor Gray
-            $result = winget uninstall $tool.Winget --silent 2>&1
-            if ($LASTEXITCODE -eq 0) {
-                $uninstalled = $true
-            }
-        }
-
-        if (-not $uninstalled -and $tool.Scoop) {
-            Write-Host "  Uninstalling $($tool.Name) via scoop..." -ForegroundColor Gray
-            $result = scoop uninstall $tool.Scoop 2>&1
-            $resultText = ($result | Out-String)
-            if ($LASTEXITCODE -eq 0 -and $resultText -notmatch "isn't installed") {
-                $uninstalled = $true
-            }
-        }
-
-        if ($uninstalled) {
-            Write-Host "    ✓ $($tool.Name) uninstalled" -ForegroundColor Green
-            $toolsUninstalled += $tool.Name
-        } else {
-            Write-Host "    - $($tool.Name) not found or already uninstalled" -ForegroundColor Gray
-        }
+# Optional Tools (yazi only in v2.0.0)
+if (Confirm "Uninstall yazi file manager?") {
+    Log-Info "Uninstalling yazi..."
+    Write-Host "  Uninstalling yazi via scoop..." -ForegroundColor Gray
+    $result = scoop uninstall yazi 2>&1
+    $resultText = ($result | Out-String)
+    if ($LASTEXITCODE -eq 0 -and $resultText -notmatch "isn't installed") {
+        Write-Host "    ✓ yazi uninstalled" -ForegroundColor Green
+        $toolsUninstalled += "yazi"
+    } else {
+        Write-Host "    - yazi not found or already uninstalled" -ForegroundColor Gray
     }
 } else {
-    Log-Info "Skipped Dev tools uninstallation"
-    $anyToolsSkipped = $true
-}
-
-Write-Host ""
-
-# Optional Tools
-if (Confirm "Uninstall Optional tools (yazi, tealdeer, glow, jq, gsudo)?") {
-    Log-Info "Uninstalling Optional tools..."
-
-    $optionalTools = @(
-        @{Name='yazi'; Scoop='yazi'},
-        @{Name='tealdeer'; Scoop='tealdeer'},
-        @{Name='glow'; Scoop='glow'},
-        @{Name='jq'; Scoop='jq'},
-        @{Name='gsudo'; Scoop='gsudo'}
-    )
-
-    foreach ($tool in $optionalTools) {
-        Write-Host "  Uninstalling $($tool.Name) via scoop..." -ForegroundColor Gray
-        $result = scoop uninstall $tool.Scoop 2>&1
-        $resultText = ($result | Out-String)
-        if ($LASTEXITCODE -eq 0 -and $resultText -notmatch "isn't installed") {
-            Write-Host "    ✓ $($tool.Name) uninstalled" -ForegroundColor Green
-            $toolsUninstalled += $tool.Name
-        } else {
-            Write-Host "    - $($tool.Name) not found or already uninstalled" -ForegroundColor Gray
-        }
-    }
-} else {
-    Log-Info "Skipped Optional tools uninstallation"
+    Log-Info "Skipped yazi uninstallation"
     $anyToolsSkipped = $true
 }
 
@@ -420,8 +332,8 @@ Write-Host ""
 if ($anyToolsSkipped) {
     Log-Info "Manual uninstallation commands (if needed later):"
     Write-Host ""
-    Write-Host "  winget uninstall Starship.Starship ajeetdsouza.zoxide junegunn.fzf eza-community.eza ..." -ForegroundColor Gray
-    Write-Host "  scoop uninstall bat fd delta dust yazi tealdeer" -ForegroundColor Gray
+    Write-Host "  winget uninstall Starship.Starship ajeetdsouza.zoxide junegunn.fzf eza-community.eza BurntSushi.ripgrep.MSVC" -ForegroundColor Gray
+    Write-Host "  scoop uninstall bat fd yazi" -ForegroundColor Gray
     Write-Host "  Uninstall-Module PSFzf -AllVersions" -ForegroundColor Gray
     Write-Host ""
 }
@@ -432,10 +344,10 @@ Log-Info "Note: JetBrainsMono Nerd Font was intentionally left installed"
 Write-Host ""
 
 # ============================================================================
-# Step 7: Reset Current Session
+# Step 6: Reset Current Session
 # ============================================================================
 
-Log-Info "Step 7: Resetting current session"
+Log-Info "Step 6: Resetting current session"
 
 # Reset prompt to default PowerShell
 function global:prompt {
@@ -465,7 +377,7 @@ $script:ActionsPerformed += "Reset current session (prompt + predictions)"
 Write-Host ""
 
 # ============================================================================
-# Step 8: Summary and Next Steps
+# Step 7: Summary and Next Steps
 # ============================================================================
 
 Write-Host ""
