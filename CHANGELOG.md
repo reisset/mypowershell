@@ -5,6 +5,24 @@ All notable changes to MyPowerShell will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.1] - 2026-02-03
+
+### Fixed
+- **Windows OS Icon**: Fixed Starship `[os.symbols]` Windows entry which was an empty string `""`
+  - Replaced with U+E70F (`nf-dev-windows`) which renders correctly in JetBrainsMono Nerd Font v3
+  - Added space in `[os]` format string so icon doesn't touch username
+- **Config Deployment**: All starship.toml edits must be deployed to `~\.config\starship.toml`
+  - Starship reads the deployed copy, not the repo source at `configs/starship.toml`
+
+### Removed
+- **custom.docker Starship module**: Removed unused Docker icon module that spawned a subprocess per-prompt
+- **lsg function**: Removed unused Windows glob workaround for eza
+- **delta.gitconfig**: Removed leftover config file (delta was removed in v2.0.0)
+- **speedierpwsh/ directory**: Removed duplicate starship.toml copy
+
+### Changed
+- **Profile**: Replaced `Test-Path` with `[System.IO.File]::Exists()` for consistency with .NET APIs used elsewhere
+
 ## [1.4.1] - 2026-01-16
 
 ### Fixed
