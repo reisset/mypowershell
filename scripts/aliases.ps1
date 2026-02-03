@@ -1,6 +1,6 @@
 # scripts/aliases.ps1
 # MyPowerShell Aliases - Modern CLI tool shortcuts
-# Version: 2.0.0 (Speedier: Minimal aliases for kept tools only)
+# Version: 2.0.1
 
 # ============================================================================
 # MODERN TOOL ALIASES (Learning-First Approach)
@@ -15,10 +15,10 @@
 # Eza (modern ls)
 # ============================================================================
 if ($ToolsAvailable.eza) {
-    function ls { eza --icons $args }
-    function ll { eza -al --icons --group-directories-first $args }
-    function la { eza -a --icons --group-directories-first $args }
-    function lt { eza --tree --level=2 --icons $args }
+    function ls { eza --icons @args }
+    function ll { eza -al --icons --group-directories-first @args }
+    function la { eza -a --icons --group-directories-first @args }
+    function lt { eza --tree --level=2 --icons @args }
 }
 
 # ============================================================================
@@ -54,5 +54,5 @@ function .... { Set-Location ..\..\.. }
 
 # Zoxide interactive mode
 if ($ToolsAvailable.zoxide) {
-    function zi { z -i $args }  # Interactive directory picker
+    function zi { z -i @args }  # Interactive directory picker
 }

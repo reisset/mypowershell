@@ -1,7 +1,7 @@
 # MyPowerShell Uninstaller
 # Removes MyPowerShell configuration and restores default PowerShell environment
 # Inspired by MyBash uninstall patterns
-# Version: 2.0.0 (Updated for speedier v2.0.0 tool set)
+# Version: 2.0.1
 
 #Requires -Version 5.1
 
@@ -143,7 +143,7 @@ Write-Host ""
 # Step 4: Remove Windows Terminal Additions
 # ============================================================================
 
-Log-Info "Step 5: Checking Windows Terminal configuration"
+Log-Info "Step 4: Checking Windows Terminal configuration"
 
 # Find Windows Terminal settings
 $wtSettingsPath = Get-ChildItem "$env:LOCALAPPDATA\Packages\Microsoft.WindowsTerminal_*\LocalState\settings.json" -ErrorAction SilentlyContinue |
@@ -366,9 +366,6 @@ try {
 # Clear MyPowerShell environment variables
 if (Test-Path Env:STARSHIP_CONFIG) {
     Remove-Item Env:STARSHIP_CONFIG -ErrorAction SilentlyContinue
-}
-if (Test-Path Env:MYPOWERSHELL_WELCOME_SHOWN) {
-    Remove-Item Env:MYPOWERSHELL_WELCOME_SHOWN -ErrorAction SilentlyContinue
 }
 
 Log-Info "Session reset to default PowerShell"

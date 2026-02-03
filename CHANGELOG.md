@@ -5,6 +5,29 @@ All notable changes to MyPowerShell will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.2] - 2026-02-03
+
+### Fixed
+- **Cache Age Bug**: Starship/zoxide cache age used `.Days` (integer truncation) instead of `.TotalDays`
+  - A 7.9-day-old cache returned `7`, passing the `> 7` check as "fresh"
+  - Changed to `.TotalDays` and `>= $toolCacheMaxAge` for correct expiration
+- **Argument Splatting**: Eza/zoxide wrapper functions used `$args` instead of `@args`
+  - Arguments with spaces were split incorrectly (e.g., `ls "Program Files"`)
+- **Uninstaller Step Label**: Step 4 (Windows Terminal) was mislabeled as "Step 5"
+
+### Removed
+- **asciiart.txt**: Orphaned welcome banner file (feature removed in v2.0.0)
+- **Orphaned env var cleanup**: Removed `MYPOWERSHELL_WELCOME_SHOWN` check from uninstaller (variable was never set since v2.0.0)
+
+### Changed
+- **README.md**: Rewrote to match v2.0.1 tool set
+  - Removed references to 6 deleted tools (lazygit, delta, jq, glow, gsudo, dust/tldr)
+  - Removed git shortcuts section
+  - Updated performance from "~150-200ms" to "~28-32ms warm"
+  - Added config redeploy note
+- **Version strings**: Synced all script headers to v2.0.1
+- **.gitignore**: Added `nul` entry (Windows device name collision)
+
 ## [2.0.1] - 2026-02-03
 
 ### Fixed
