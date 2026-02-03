@@ -2,6 +2,9 @@
 mypowershell-spec.md
 CLAUDE.md
 
+# Windows device name collision (PowerShell can accidentally create this)
+nul
+
 # Temporary files
 *.tmp
 *.log

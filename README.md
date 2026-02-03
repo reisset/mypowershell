@@ -5,10 +5,10 @@ A high-performance PowerShell environment for Windows 11. Built to enhance produ
 ## The Goods
 
 - **Starship Prompt:** Fast, informative, and git-aware.
-- **Modern Toolset:** Includes `zoxide` (smart cd), `eza` (modern ls), `bat`, `fzf`, `lazygit`, `delta`, `jq`, `glow`, `gsudo`, and more.
+- **Modern Toolset:** Includes `zoxide` (smart cd), `eza` (modern ls), `bat`, `fzf`, `fd`, `ripgrep`, and optional `yazi` file manager.
 - **Muscle Memory Safe:** Standard PowerShell commands still work - you won't get lost.
-- **Visual Polish:** Tokyo Night theme, JetBrainsMono Nerd Font, syntax-highlighted diffs.
-- **Fast Startup:** ~150-200ms profile load time with aggressive optimizations.
+- **Visual Polish:** Tokyo Night theme, JetBrainsMono Nerd Font.
+- **Fast Startup:** ~28-32ms warm profile load time with aggressive optimizations.
 
 ## Quick Start
 
@@ -60,8 +60,8 @@ All steps are prompted with safe defaults (No). Your session resets instantly - 
 - **Profile:** `scripts\profile.ps1` - Main PowerShell profile
 - **Aliases:** `scripts\aliases.ps1` - Modern tool aliases and shortcuts
 - **Prompt:** `configs\starship.toml` - Starship configuration
-- **Git Delta:** `configs\delta.gitconfig` - Git diff styling
-- **ASCII Art:** `asciiart.txt` - Welcome banner
+
+After editing `configs\starship.toml`, redeploy: `Copy-Item configs\starship.toml ~\.config\starship.toml`
 
 ## Quick Reference
 
@@ -74,15 +74,6 @@ zi           # Interactive directory picker
 ..           # Go up one directory
 ```
 
-**Git Shortcuts:**
-```powershell
-gs           # git status
-ga .         # git add .
-gc -m "msg"  # git commit
-gp           # git push
-lg           # LazyGit TUI
-```
-
 **Files & Search:**
 ```powershell
 ls           # List with icons (eza)
@@ -91,12 +82,8 @@ cat file.txt # Syntax-highlighted view (bat)
 fd pattern   # Fast file search
 rg pattern   # Fast text search
 Ctrl+R       # Fuzzy history search
-dust         # Visual disk usage
-y            # Yazi file manager
-tldr cmd     # Quick command examples
-glow file.md # Beautiful markdown viewer
-jq '.key' f  # Parse JSON files
-sudo cmd     # Elevate commands (gsudo)
+Ctrl+T       # Fuzzy file search
+y            # Yazi file manager (optional)
 ```
 
 ## License

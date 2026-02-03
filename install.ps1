@@ -6,7 +6,7 @@
     Installs modern CLI tools and configurations inspired by MyBash for Linux.
     Installs core CLI tools (starship, zoxide, fzf, eza, bat, fd, ripgrep) with Tokyo Night theme
 .NOTES
-    Version: 2.0.0
+    Version: 2.0.1
     No administrator privileges required
 #>
 

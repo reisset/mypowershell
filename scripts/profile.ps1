@@ -1,6 +1,6 @@
 # MyPowerShell Profile
 # High-performance PowerShell environment inspired by MyBash
-# Version: 2.0.0 (Speedier: Stripped PSReadLine, banner, unused tools)
+# Version: 2.0.1
 
 # Set root directory
 $MyPowerShellRoot = $PSScriptRoot | Split-Path -Parent
@@ -68,11 +68,11 @@ if ($ToolsAvailable.starship) {
     # Cache init script for faster startup (~50ms saved)
     $starshipCache = "$env:TEMP\mypowershell-starship-init.ps1"
     $cacheAge = if ([System.IO.File]::Exists($starshipCache)) {
-        ((Get-Date) - [System.IO.File]::GetLastWriteTime($starshipCache)).Days
+        ((Get-Date) - [System.IO.File]::GetLastWriteTime($starshipCache)).TotalDays
     } else { 999 }
 
     # Regenerate cache if it doesn't exist or is older than 7 days
-    if ($cacheAge -gt 7) {
+    if ($cacheAge -ge $toolCacheMaxAge) {
         try {
             $initOutput = starship init powershell --print-full-init
             if ($initOutput) {
@@ -98,11 +98,11 @@ if ($ToolsAvailable.zoxide) {
     # Cache init script for faster startup (~50ms saved)
     $zoxideCache = "$env:TEMP\mypowershell-zoxide-init.ps1"
     $cacheAge = if ([System.IO.File]::Exists($zoxideCache)) {
-        ((Get-Date) - [System.IO.File]::GetLastWriteTime($zoxideCache)).Days
+        ((Get-Date) - [System.IO.File]::GetLastWriteTime($zoxideCache)).TotalDays
     } else { 999 }
 
     # Regenerate cache if it doesn't exist or is older than 7 days
-    if ($cacheAge -gt 7) {
+    if ($cacheAge -ge $toolCacheMaxAge) {
         try {
             $initOutput = zoxide init powershell
             if ($initOutput) {
