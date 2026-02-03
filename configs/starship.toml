@@ -3,7 +3,7 @@
 # git_status DISABLED for performance
 
 format = """
-[┌─](bold cyan) $os $username in $directory$git_branch${custom.docker}$python$cmd_duration
+[┌─](bold cyan) $os$username in $directory$git_branch$python$cmd_duration
 [└─](bold cyan)$character"""
 
 add_newline = true
@@ -14,11 +14,11 @@ error_symbol = "[❯](bold red)"
 
 [os]
 disabled = false
-format = "[$symbol]($style)"
+format = "[$symbol]($style) "
 style = "bold white"
 
 [os.symbols]
-Windows = ""
+Windows = ""
 
 [username]
 show_always = true
@@ -38,12 +38,6 @@ style = "bold purple"
 
 [git_status]
 disabled = true
-
-[custom.docker]
-description = "Shows docker icon in directories with compose/Dockerfile"
-command = "echo docker"
-files = ["compose.yaml", "compose.yml", "docker-compose.yaml", "docker-compose.yml", "Dockerfile"]
-format = "via [](bold blue) "
 
 [python]
 format = '[ $virtualenv]($style)'
