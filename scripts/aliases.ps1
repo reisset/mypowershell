@@ -12,21 +12,13 @@
 # This saves ~180ms by avoiding 6 redundant Get-Command checks
 
 # ============================================================================
-# Eza (modern ls) - with glob workaround for Windows
+# Eza (modern ls)
 # ============================================================================
 if ($ToolsAvailable.eza) {
     function ls { eza --icons $args }
     function ll { eza -al --icons --group-directories-first $args }
     function la { eza -a --icons --group-directories-first $args }
     function lt { eza --tree --level=2 --icons $args }
-
-    # Glob workaround: Windows doesn't expand wildcards like Linux
-    # Use: lsg "*.txt" instead of: eza *.txt (which fails)
-    function lsg {
-        param([string]$Pattern = "*")
-        $files = Get-ChildItem -Name $Pattern
-        if ($files) { eza --icons @files }
-    }
 }
 
 # ============================================================================

@@ -55,7 +55,7 @@ if (-not $cacheValid) {
 # 1. Source Aliases (with tool availability passed)
 # ============================================================================
 $aliasesPath = Join-Path $MyPowerShellRoot "scripts\aliases.ps1"
-if (Test-Path $aliasesPath) {
+if ([System.IO.File]::Exists($aliasesPath)) {
     . $aliasesPath
 }
 
