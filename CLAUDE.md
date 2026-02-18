@@ -58,7 +58,7 @@ mypowershell/
 ### Visual Enhancements
 - **JetBrainsMono Nerd Font**: Installed via scoop nerd-fonts bucket
 - **Tokyo Night Theme**: Auto-injected into Windows Terminal
-- **OS Icon**: Windows Nerd Font glyph in prompt (U+E70F)
+- **OS Icon**: Windows Nerd Font glyph in prompt (`󰍲`, nf-md-windows)
 
 ## Key Design Decisions
 
@@ -125,7 +125,7 @@ The profile loads in this order:
   - Switched to minimal Starship config
   - Achieved: ~28-32ms warm boot, ~190-210ms cold boot
 - ✅ Phase 12: Cleanup & Bug Fixes (v2.0.1)
-  - Fixed Windows OS icon in Starship (was empty string, now U+E70F)
+  - Fixed Windows OS icon in Starship (was empty string, now `󰍲` nf-md-windows)
   - Fixed config deployment (edits must go to `~\.config\starship.toml`)
   - Removed custom.docker Starship module (unused subprocess per-prompt)
   - Removed lsg function, delta.gitconfig, speedierpwsh/ directory
@@ -216,7 +216,7 @@ The profile loads in this order:
 **Fix** (v2.0.1): Starship reads from `~\.config\starship.toml` (deployed copy), not `mypowershell\configs\starship.toml` (repo source). After editing the repo copy, redeploy: `Copy-Item configs\starship.toml ~\.config\starship.toml`
 
 **Issue**: Windows OS icon not rendering in prompt
-**Fix** (v2.0.1): Original `Windows = ""` was empty string (no glyph). Replaced with U+E70F (`nf-dev-windows`). Requires JetBrainsMono Nerd Font v3+.
+**Fix** (v2.0.1): Original `Windows = ""` was empty string (no glyph). Replaced with `󰍲` (`nf-md-windows`). Requires JetBrainsMono Nerd Font v3+.
 
 **Issue**: Profile load time ~500ms
 **Fix** (v1.1.0): Batch command checks + cache init scripts → <250ms
@@ -303,4 +303,4 @@ After running `.\uninstall.ps1`:
 - **Performance-Critical**: Always measure impact of profile changes with `Measure-Command { . $PROFILE }`
 - **MyBash Reference**: Linux equivalent at `C:\Users\Forensic 64032\mybash\` for cross-referencing patterns
 - **Config Files**: starship.toml is deployed to `~\.config\` - always edit the repo copy then redeploy
-- **Commit Co-Authoring**: Always add `Co-Authored-By: Claude <noreply@anthropic.com>` to commit messages
+- **Commit Co-Authoring**: Always add `Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>` to commit messages
