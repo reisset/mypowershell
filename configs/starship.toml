@@ -18,7 +18,7 @@ format = "[$symbol]($style) "
 style = "bold white"
 
 [os.symbols]
-Windows = ""
+Windows = "󰍲"
 
 [username]
 show_always = true
