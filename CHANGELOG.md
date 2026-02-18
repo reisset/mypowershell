@@ -32,7 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - **Windows OS Icon**: Fixed Starship `[os.symbols]` Windows entry which was an empty string `""`
-  - Replaced with U+E70F (`nf-dev-windows`) which renders correctly in JetBrainsMono Nerd Font v3
+  - Replaced with `󰍲` (`nf-md-windows`) which renders correctly in JetBrainsMono Nerd Font v3
   - Added space in `[os]` format string so icon doesn't touch username
 - **Config Deployment**: All starship.toml edits must be deployed to `~\.config\starship.toml`
   - Starship reads the deployed copy, not the repo source at `configs/starship.toml`
