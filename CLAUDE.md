@@ -8,7 +8,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **MyPowerShell** is a high-performance PowerShell environment for Windows 11, inspired by [MyBash](https://github.com/reisset/mybash) for Linux. It enhances the PowerShell experience with modern CLI tools while preserving muscle memory for standard commands.
 
-**Version**: v2.0.1
+**Version**: v2.1.0
 **Repository**: https://github.com/reisset/mypowershell
 **License**: MIT
 
@@ -28,10 +28,14 @@ mypowershell/
 ├── uninstall.ps1                # Comprehensive uninstaller (v1.1.0)
 ├── scripts/
 │   ├── profile.ps1             # Main profile (starship, zoxide, fzf)
-│   └── aliases.ps1             # Tool aliases (eza, bat, fd, rg)
+│   ├── aliases.ps1             # Tool aliases (eza, bat, fd, rg) + theme switcher
+│   └── switch-theme.ps1        # Theme switcher (deploys starship + updates WT scheme)
 ├── configs/
 │   ├── starship.toml           # Starship prompt config (Tokyo Night)
-│   └── windows-terminal.json   # WT theme fragment (Tokyo Night + JetBrainsMono 15pt)
+│   ├── starship-htb.toml       # Starship prompt config (Hack The Box)
+│   ├── starship-matrix.toml    # Starship prompt config (Matrix)
+│   ├── starship-kanagawa.toml  # Starship prompt config (Kanagawa)
+│   └── windows-terminal.json   # WT theme fragment (all 4 schemes + JetBrainsMono 15pt)
 ├── docs/
 │   └── TOOLS.md                # Quick reference guide
 ├── README.md                   # User documentation
@@ -68,6 +72,7 @@ mypowershell/
 4. **Config Overwrites**: Automatic without prompting (for repeatability)
 5. **Yazi Wrapper**: Allows directory changes after exiting file manager
 6. **Deployed Config**: Starship reads from `~\.config\starship.toml`, not the repo copy
+7. **Multi-Theme System**: Four themes (tokyo/htb/matrix/kanagawa) via `theme <name>` alias. Each theme has its own `configs/starship-<name>.toml`. `switch-theme.ps1` deploys the starship config AND syncs the WT color scheme from `configs/windows-terminal.json` (so color edits take effect on next `theme` call without reinstalling). Installer always registers all schemes unconditionally — only theme activation is prompted.
 
 ## Profile Structure & Architecture
 
@@ -92,7 +97,7 @@ The profile loads in this order:
 
 **.NET File APIs** (v1.2.0): Uses faster .NET methods (`[System.IO.File]::Exists()`, `GetLastWriteTime()`, `ReadAllLines()`) instead of PowerShell cmdlets for file operations, saving ~10-20ms.
 
-## Current State (v2.0.1)
+## Current State (v2.1.0)
 
 **Completed Phases:**
 - ✅ Phase 1-4: Foundation, Core Tools, Dev Tools, Documentation
@@ -130,6 +135,11 @@ The profile loads in this order:
   - Removed custom.docker Starship module (unused subprocess per-prompt)
   - Removed lsg function, delta.gitconfig, speedierpwsh/ directory
   - Replaced Test-Path with .NET File API for consistency
+- ✅ Phase 13: Multi-Theme System (v2.1.0)
+  - Added four themes: Tokyo Night, Hack The Box, Matrix, Kanagawa
+  - `theme <name>` alias with tab completion switches both Starship and WT simultaneously
+  - `switch-theme.ps1` syncs scheme colors from repo on every switch
+  - Installer registers all schemes unconditionally; theme activation via numbered menu
 
 ## Performance Metrics
 

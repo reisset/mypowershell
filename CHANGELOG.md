@@ -5,6 +5,26 @@ All notable changes to MyPowerShell will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0] - 2026-03-16
+
+### Added
+- **Multi-Theme System**: Four terminal themes switchable at any time with `theme <name>`
+  - `tokyo` — Tokyo Night (original, dark navy + pastel blue/purple)
+  - `htb` — Hack The Box (HTB brand navy `#141D2B` + neon green `#9FEF00`)
+  - `matrix` — Matrix (pure black + phosphor green `#00FF41`, all-green prompt)
+  - `kanagawa` — Kanagawa Wave (warm dark `#1F1F28` + Japanese woodblock palette)
+- **`scripts/switch-theme.ps1`**: Theme switcher — deploys the correct `starship.toml` and updates Windows Terminal `colorScheme` in one command. Also syncs scheme colors from repo on every switch so color edits take effect immediately.
+- **`configs/starship-htb.toml`**: Starship config for Hack The Box theme (green/cyan palette)
+- **`configs/starship-matrix.toml`**: Starship config for Matrix theme (all bold green)
+- **`configs/starship-kanagawa.toml`**: Starship config for Kanagawa theme (rounded `╭─╰─` corners, yellow/blue/purple palette)
+- **`theme` alias** (`scripts/aliases.ps1`): Calls switch-theme.ps1 with tab completion for all four theme names
+- **`Select-Theme` helper** (`install.ps1`): Numbered menu during installation to choose which theme to activate
+
+### Changed
+- **Installer WT flow**: Scheme registration is now always unconditional — both/all schemes are registered whenever WT is detected, regardless of which theme the user activates. Prevents the previous bug where saying "no" to a theme prompt skipped registration entirely.
+- **Installer `Select-Theme` menu**: Replaces the old single Y/n "Add Tokyo Night?" prompt with a numbered menu showing all available themes plus a Skip option
+- **`switch-theme.ps1`**: Syncs scheme colors from `configs/windows-terminal.json` into live WT settings on every switch, so color tweaks in the repo take effect without reinstalling
+
 ## [2.0.2] - 2026-02-03
 
 ### Fixed

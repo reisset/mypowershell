@@ -4,9 +4,9 @@
     MyPowerShell Installer - High-performance PowerShell environment for Windows
 .DESCRIPTION
     Installs modern CLI tools and configurations inspired by MyBash for Linux.
-    Installs core CLI tools (starship, zoxide, fzf, eza, bat, fd, ripgrep) with Tokyo Night theme
+    Installs core CLI tools (starship, zoxide, fzf, eza, bat, fd, ripgrep) with multi-theme support
 .NOTES
-    Version: 2.0.1
+    Version: 2.1.0
     No administrator privileges required
 #>
 
@@ -63,6 +63,28 @@ function Confirm {
     }
 
     return $response -match '^[Yy]'
+}
+
+function Select-Theme {
+    param([string]$Message)
+
+    if ($SkipConfirmation) { return "tokyo" }
+
+    Write-Host "$Message" -ForegroundColor Cyan
+    Write-Host "  [1] Tokyo Night (default)" -ForegroundColor White
+    Write-Host "  [2] Hack The Box" -ForegroundColor White
+    Write-Host "  [3] Matrix" -ForegroundColor White
+    Write-Host "  [4] Kanagawa" -ForegroundColor White
+    Write-Host "  [5] Skip" -ForegroundColor Gray
+    $response = Read-Host "Choose [1]"
+
+    switch ($response.Trim()) {
+        "2"     { return "htb" }
+        "3"     { return "matrix" }
+        "4"     { return "kanagawa" }
+        "5"     { return "none" }
+        default { return "tokyo" }
+    }
 }
 
 function Install-WingetPackage {
@@ -357,23 +379,43 @@ $wtSettingsPath = Get-ChildItem "$env:LOCALAPPDATA\Packages\Microsoft.WindowsTer
 if ($wtSettingsPath) {
     Write-Status "Windows Terminal detected at: $($wtSettingsPath.FullName)" -Type Info
 
-    if (Confirm "Add Tokyo Night theme to Windows Terminal?") {
-        try {
-            # Read current settings
-            $wtSettings = Get-Content $wtSettingsPath.FullName -Raw | ConvertFrom-Json
+    try {
+        # Read current settings
+        $wtSettings = Get-Content $wtSettingsPath.FullName -Raw | ConvertFrom-Json
 
-            # Read our theme config
-            $themeConfig = Get-Content (Join-Path $RepoDir "configs\windows-terminal.json") -Raw | ConvertFrom-Json
+        # Read our theme config
+        $themeConfig = Get-Content (Join-Path $RepoDir "configs\windows-terminal.json") -Raw | ConvertFrom-Json
 
-            # Add Tokyo Night scheme if it doesn't exist
-            if (-not ($wtSettings.schemes | Where-Object { $_.name -eq "Tokyo Night" })) {
-                if (-not $wtSettings.schemes) {
-                    $wtSettings | Add-Member -MemberType NoteProperty -Name "schemes" -Value @() -Force
-                }
-                $wtSettings.schemes += $themeConfig.schemes[0]
-                Write-Status "Added Tokyo Night color scheme" -Type Success
+        # Always register all available schemes (just adds options, doesn't change active theme)
+        if (-not $wtSettings.schemes) {
+            $wtSettings | Add-Member -MemberType NoteProperty -Name "schemes" -Value @() -Force
+        }
+
+        # Register/update schemes from our config (always sync so color edits take effect)
+        foreach ($scheme in $themeConfig.schemes) {
+            $existing = $wtSettings.schemes | Where-Object { $_.name -eq $scheme.name }
+            if ($existing) {
+                # Replace to pick up any color changes
+                $wtSettings.schemes = @($wtSettings.schemes | Where-Object { $_.name -ne $scheme.name }) + $scheme
+                Write-Status "Updated $($scheme.name) color scheme" -Type Success
             } else {
-                Write-Status "Tokyo Night scheme already exists" -Type Info
+                $wtSettings.schemes += $scheme
+                Write-Status "Registered $($scheme.name) color scheme" -Type Success
+            }
+        }
+
+        # Save after registering schemes
+        $wtSettings | ConvertTo-Json -Depth 10 | Set-Content $wtSettingsPath.FullName -Force
+
+        # Ask which theme to activate
+        $activeTheme = Select-Theme "Which theme would you like to activate?"
+
+        if ($activeTheme -ne "none") {
+            $schemeName = switch ($activeTheme) {
+                "htb"      { "Hack The Box" }
+                "matrix"   { "Matrix" }
+                "kanagawa" { "Kanagawa" }
+                default    { "Tokyo Night" }
             }
 
             # Update default profile settings
@@ -382,7 +424,7 @@ if ($wtSettingsPath) {
             }
 
             # Set color scheme
-            $wtSettings.profiles.defaults | Add-Member -MemberType NoteProperty -Name "colorScheme" -Value "Tokyo Night" -Force
+            $wtSettings.profiles.defaults | Add-Member -MemberType NoteProperty -Name "colorScheme" -Value $schemeName -Force
 
             # Set font
             if (-not $wtSettings.profiles.defaults.font) {
@@ -396,13 +438,13 @@ if ($wtSettingsPath) {
 
             # Save settings
             $wtSettings | ConvertTo-Json -Depth 10 | Set-Content $wtSettingsPath.FullName -Force
-            Write-Status "Windows Terminal configured with Tokyo Night theme" -Type Success
-        } catch {
-            Write-Status "Failed to configure Windows Terminal: $_" -Type Warning
-            Write-Status "You can manually merge configs\windows-terminal.json into your settings" -Type Info
+            Write-Status "Windows Terminal activated: $schemeName" -Type Success
+        } else {
+            Write-Status "Skipping theme activation (use 'theme htb' or 'theme tokyo' anytime to switch)" -Type Info
         }
-    } else {
-        Write-Status "Skipping Windows Terminal configuration" -Type Info
+    } catch {
+        Write-Status "Failed to configure Windows Terminal: $_" -Type Warning
+        Write-Status "You can manually merge configs\windows-terminal.json into your settings" -Type Info
     }
 } else {
     Write-Status "Windows Terminal not detected. Skipping theme configuration." -Type Info

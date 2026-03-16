@@ -1,6 +1,6 @@
 # scripts/aliases.ps1
 # MyPowerShell Aliases - Modern CLI tool shortcuts
-# Version: 2.0.1
+# Version: 2.1.0
 
 # ============================================================================
 # MODERN TOOL ALIASES (Learning-First Approach)
@@ -55,4 +55,25 @@ function .... { Set-Location ..\..\.. }
 # Zoxide interactive mode
 if ($ToolsAvailable.zoxide) {
     function zi { z -i @args }  # Interactive directory picker
+}
+
+# ============================================================================
+# Theme Switcher
+# ============================================================================
+function theme {
+    param(
+        [Parameter(Mandatory = $false)]
+        [ValidateSet("htb", "tokyo", "matrix", "kanagawa")]
+        [string]$Name
+    )
+    if (-not $Name) {
+        Write-Host "Usage: theme <htb|tokyo>" -ForegroundColor Yellow
+        return
+    }
+    $switcherPath = Join-Path $MyPowerShellRoot "scripts\switch-theme.ps1"
+    if ([System.IO.File]::Exists($switcherPath)) {
+        & $switcherPath -Theme $Name
+    } else {
+        Write-Host "[!] switch-theme.ps1 not found at: $switcherPath" -ForegroundColor Red
+    }
 }
