@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**MyPowerShell** is a high-performance PowerShell environment for Windows 11, inspired by [MyBash](https://github.com/reisset/mybash) for Linux. It enhances the PowerShell experience with modern CLI tools while preserving muscle memory for standard commands.
+**MyPowerShell** is a high-performance PowerShell environment for Windows 11. It enhances the PowerShell experience with modern CLI tools while preserving muscle memory for standard commands.
 
 **Version**: v2.1.0
 **Repository**: https://github.com/reisset/mypowershell
@@ -25,7 +25,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ```
 mypowershell/
 ├── install.ps1                  # Main installer (winget/scoop)
-├── uninstall.ps1                # Comprehensive uninstaller (v1.1.0)
+├── uninstall.ps1                # Comprehensive uninstaller
 ├── scripts/
 │   ├── profile.ps1             # Main profile (starship, zoxide, fzf)
 │   ├── aliases.ps1             # Tool aliases (eza, bat, fd, rg) + theme switcher
@@ -61,7 +61,7 @@ mypowershell/
 
 ### Visual Enhancements
 - **JetBrainsMono Nerd Font**: Installed via scoop nerd-fonts bucket
-- **Tokyo Night Theme**: Auto-injected into Windows Terminal
+- **Four Themes**: tokyo, htb, matrix, kanagawa — all registered in Windows Terminal on install
 - **OS Icon**: Windows Nerd Font glyph in prompt (`󰍲`, nf-md-windows)
 
 ## Key Design Decisions
@@ -97,61 +97,12 @@ The profile loads in this order:
 
 **.NET File APIs** (v1.2.0): Uses faster .NET methods (`[System.IO.File]::Exists()`, `GetLastWriteTime()`, `ReadAllLines()`) instead of PowerShell cmdlets for file operations, saving ~10-20ms.
 
-## Current State (v2.1.0)
-
-**Completed Phases:**
-- ✅ Phase 1-4: Foundation, Core Tools, Dev Tools, Documentation
-- ✅ Phase 5: Performance Optimization (v1.1.0)
-  - Batch command checks, cached init scripts
-  - Achieved: <250ms profile load time
-- ✅ Phase 6: Advanced Performance (v1.2.0-v1.2.1)
-  - Optimized batch Get-Command, .NET file APIs
-  - Fixed Windows .exe extension handling
-  - Achieved: ~150-200ms profile load time
-- ✅ Phase 7: Uninstaller (v1.1.0-uninstall)
-  - Comprehensive uninstall.ps1 with automatic tool removal
-  - Immediate session reset (no restart needed)
-- ✅ Phase 8: Critical Bug Fixes (v1.2.3-v1.2.4)
-  - Fixed null profile detection (installer skipped hook after uninstall)
-  - Fixed Windows Terminal font config (hashtable vs PSCustomObject serialization)
-  - Ensures clean uninstall → reinstall workflow
-- ✅ Phase 9: Essential Tools Enhancement (v1.3.0)
-  - Added jq, gsudo, glow (later removed in v2.0.0)
-- ✅ Phase 10: Critical Performance Fixes (v1.4.0)
-  - Fixed broken Starship caching
-  - Added tool availability caching to file (7-day cache)
-  - Achieved: ~42ms warm boot, ~270ms cold boot
-- ✅ Phase 11: Speedier Overhaul (v2.0.0)
-  - Removed dev tools: lazygit, delta, dust
-  - Removed optional tools: tealdeer, glow, jq, gsudo
-  - Removed PSReadLine customizations (predictions, keybindings)
-  - Removed ASCII welcome banner
-  - Removed git shortcuts
-  - Switched to minimal Starship config
-  - Achieved: ~28-32ms warm boot, ~190-210ms cold boot
-- ✅ Phase 12: Cleanup & Bug Fixes (v2.0.1)
-  - Fixed Windows OS icon in Starship (was empty string, now `󰍲` nf-md-windows)
-  - Fixed config deployment (edits must go to `~\.config\starship.toml`)
-  - Removed custom.docker Starship module (unused subprocess per-prompt)
-  - Removed lsg function, delta.gitconfig, speedierpwsh/ directory
-  - Replaced Test-Path with .NET File API for consistency
-- ✅ Phase 13: Multi-Theme System (v2.1.0)
-  - Added four themes: Tokyo Night, Hack The Box, Matrix, Kanagawa
-  - `theme <name>` alias with tab completion switches both Starship and WT simultaneously
-  - `switch-theme.ps1` syncs scheme colors from repo on every switch
-  - Installer registers all schemes unconditionally; theme activation via numbered menu
-
 ## Performance Metrics
 
-| Metric | v1.0.0 | v1.1.0 | v1.2.0 | v1.4.0 | v2.0.0 |
-|--------|--------|--------|--------|--------|--------|
-| Profile load time (warm) | ~500ms | <250ms | ~150-200ms | ~42ms | ~28-32ms |
-| Profile load time (cold) | ~1000ms | ~600ms | ~500ms | ~270ms | ~190-210ms |
-| Get-Command batching | 10+ individual | 1 batch (9 calls) | 1 batch (1 call) | Cached (7 days) | Cached (8 tools) |
-| Init script calls | 2 (spawn each time) | 0 (cached) | 0 (cached - broken) | 0 (cached - fixed) | 0 (cached) |
-| PSReadLine config | Full | Full | Full | Full | None (default) |
-| Tools checked | 12 | 12 | 12 | 12 | 8 |
-| File operations | Cmdlets | Cmdlets | .NET APIs | .NET APIs | .NET APIs |
+- **Warm boot**: ~28-32ms | **Cold boot**: ~190-210ms
+- Tool check: 1 cached `Get-Command` batch (8 tools, 7-day TTL at `$env:TEMP\mypowershell-tools.json`)
+- Init scripts: cached to `$env:TEMP\mypowershell-{starship,zoxide}-init.ps1`, 7-day TTL
+- File operations: .NET APIs (`[System.IO.File]::Exists()`, `GetLastWriteTime()`, `ReadAllLines()`)
 
 ## Installation Flow
 
@@ -166,73 +117,27 @@ The profile loads in this order:
 9. **Deploy Config**: Copy starship.toml to `~\.config\`
 10. **Profile Hook**: Add to `$PROFILE`
 
-## Uninstallation Flow (v2.0.0)
+## Uninstallation Flow
 
-**Script**: `uninstall.ps1` - 7-step process with MyBash-inspired design
+`uninstall.ps1` performs a 7-step guided removal:
 
-**Step 1: PowerShell Profile Cleanup**
-- Detects MyPowerShell hook by `# MyPowerShell Configuration` marker
-- Creates timestamped backup: `$PROFILE.mypowershell-backup-yyyyMMdd-HHmmss`
-- Removes hook block via regex pattern
+1. Removes profile hook (creates timestamped backup first)
+2. Removes Starship config (`~\.config\starship.toml`)
+3. Removes cached init scripts from `$env:TEMP` (automatic, no prompt)
+4. Optionally removes Windows Terminal themes/font settings
+5. Optionally uninstalls tools (winget first, scoop fallback per tool)
+6. Resets current session immediately — no restart needed
+7. Shows summary
 
-**Step 2: Starship Configuration**
-- Removes `$env:USERPROFILE\.config\starship.toml`
-
-**Step 3: Cached Init Scripts** (automatic, no prompt)
-- Removes `$env:TEMP\mypowershell-starship-init.ps1`
-- Removes `$env:TEMP\mypowershell-zoxide-init.ps1`
-
-**Step 4: Windows Terminal** (optional)
-- Removes "Tokyo Night" from color schemes array
-- Removes `colorScheme`, `font.face`, `font.size`, `padding` from default profile
-- Does NOT reset to Windows defaults - just removes what we added
-
-**Step 5: Automatic Tool Uninstallation** (prompted per category)
-- **Core Tools**: starship, zoxide, fzf, eza, bat, fd, ripgrep (prompted)
-- **Optional Tools**: yazi (prompted)
-- **PSFzf Module**: `Uninstall-Module PSFzf -AllVersions` (prompted)
-- Tries winget first, falls back to scoop automatically
-- Shows progress: "✓ tool uninstalled" or "- not found"
-
-**Step 6: Immediate Session Reset** (automatic)
-- Resets prompt function: `function prompt { "PS $($executionContext.SessionState.Path.CurrentLocation)$('>' * ($nestedPromptLevel + 1)) " }`
-- Disables PSReadLine predictions: `Set-PSReadLineOption -PredictionSource None`
-- Clears environment variables: `STARSHIP_CONFIG`, `MYPOWERSHELL_WELCOME_SHOWN`
-- User sees native PowerShell immediately, no restart needed
-
-**Step 7: Summary**
-- Lists all actions performed
-- Shows checkmarks for session reset confirmation
-- Notes that new sessions will be clean
-
-**Design Philosophy**:
-- Default-NO confirmations (safe by default)
-- MyBash-inspired: color-coded logging, step-by-step process
-- Preserves JetBrainsMono Nerd Font (user preference: "good to leave behind")
-- Manual commands shown only if tools skipped
+All destructive steps use default-NO confirmations. JetBrainsMono font is preserved.
 
 ## Common Issues & Fixes
 
-**Issue**: After uninstall + reinstall, nothing works (no Starship, zoxide, aliases, ASCII art)
-**Fix** (v1.2.3): Empty profile bug - `$null -notlike "*pattern*"` returns empty array in PowerShell, which is falsy. Added explicit null check: `if (-not $existingContent -or $existingContent -notlike "*$profileSource*")`
-
-**Issue**: After uninstall + reinstall, Windows Terminal font stays on Cascadia Mono instead of JetBrainsMono
-**Fix** (v1.2.4): Hashtable serialization bug - NoteProperties added to `@{}` via Add-Member don't serialize to JSON. Changed to `[PSCustomObject]@{}` in install.ps1:424, 432.
-
-**Issue**: Starship prompt disappeared after v1.2.0 update
-**Fix** (v1.2.1): Windows .exe extension handling - batch Get-Command returns `starship.exe`, not `starship`. Check both forms.
-
 **Issue**: Starship config changes not taking effect
-**Fix** (v2.0.1): Starship reads from `~\.config\starship.toml` (deployed copy), not `mypowershell\configs\starship.toml` (repo source). After editing the repo copy, redeploy: `Copy-Item configs\starship.toml ~\.config\starship.toml`
+**Fix**: Starship reads from `~\.config\starship.toml` (deployed copy), not `configs\starship.toml` (repo source). After editing, redeploy: `Copy-Item configs\starship.toml ~\.config\starship.toml` — or just run `theme <name>` which redeploys automatically.
 
 **Issue**: Windows OS icon not rendering in prompt
-**Fix** (v2.0.1): Original `Windows = ""` was empty string (no glyph). Replaced with `󰍲` (`nf-md-windows`). Requires JetBrainsMono Nerd Font v3+.
-
-**Issue**: Profile load time ~500ms
-**Fix** (v1.1.0): Batch command checks + cache init scripts → <250ms
-
-**Issue**: Profile load time still ~250ms
-**Fix** (v1.2.0): Optimized batch Get-Command, .NET file APIs, removed PSReadLine check → ~150-200ms
+**Fix**: Requires JetBrainsMono Nerd Font v3+. The icon is `󰍲` (`nf-md-windows`). Verify the font is active in Windows Terminal.
 
 ## Development Commands
 
@@ -270,22 +175,6 @@ Remove-Item "$env:TEMP\mypowershell-*.ps1"
 . "$PSScriptRoot\scripts\aliases.ps1"  # Source aliases directly
 ```
 
-### Git Workflow
-```powershell
-# Stage changes
-git add .
-
-# Commit with conventional commit format
-git commit -m "type: description
-
-Detailed explanation if needed"
-
-# Common commit types: feat, fix, perf, docs, refactor, test, chore
-
-# Push changes
-git push
-```
-
 ## Testing Checklist
 
 ### Installation Testing
@@ -311,6 +200,5 @@ After running `.\uninstall.ps1`:
 
 - **No emojis** unless explicitly requested by user
 - **Performance-Critical**: Always measure impact of profile changes with `Measure-Command { . $PROFILE }`
-- **MyBash Reference**: Linux equivalent at `C:\Users\Forensic 64032\mybash\` for cross-referencing patterns
 - **Config Files**: starship.toml is deployed to `~\.config\` - always edit the repo copy then redeploy
 - **Commit Co-Authoring**: Always add `Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>` to commit messages

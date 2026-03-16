@@ -1,6 +1,6 @@
 # MyPowerShell
 
-A high-performance PowerShell environment for Windows 11. Built to enhance productivity with modern CLI tools while maintaining PowerShell fundamentals. **Inspired by MyBash and adapted for Windows.**
+A high-performance PowerShell environment for Windows 11. Built to enhance productivity with modern CLI tools while maintaining PowerShell fundamentals.
 
 ## The Goods
 
