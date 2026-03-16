@@ -1,6 +1,6 @@
 # MyPowerShell Profile
 # High-performance PowerShell environment inspired by MyBash
-# Version: 2.0.1
+# Version: 2.1.0
 
 # Set root directory
 $MyPowerShellRoot = $PSScriptRoot | Split-Path -Parent
