@@ -89,9 +89,9 @@ Get-Help Get-ChildItem    # Read full help for a command
 
 ## Visual Enhancements
 
-- **Nerd Font**: JetBrainsMono Nerd Font (install via scoop)
-- **Color Scheme**: Tokyo Night (Windows Terminal)
-- **Icons**: Supported in eza, starship prompt
+- **Nerd Font**: JetBrainsMono Nerd Font (installed via scoop)
+- **Themes**: Four switchable themes — `theme tokyo`, `theme htb`, `theme matrix`, `theme kanagawa`
+- **Icons**: Supported in eza and starship prompt (requires Nerd Font)
 
 ---
 
