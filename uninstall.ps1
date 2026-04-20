@@ -1,4 +1,4 @@
-# MyPowerShell Uninstaller
+﻿# MyPowerShell Uninstaller
 # Removes MyPowerShell configuration and restores default PowerShell environment
 # Inspired by MyBash uninstall patterns
 # Version: 2.0.1
