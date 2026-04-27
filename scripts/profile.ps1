@@ -1,6 +1,6 @@
 # MyPowerShell Profile
 # High-performance PowerShell environment inspired by MyBash
-# Version: 2.1.0
+# Version: 2.2.0
 
 # Set root directory
 $MyPowerShellRoot = $PSScriptRoot | Split-Path -Parent
@@ -151,7 +151,16 @@ if ($ToolsAvailable.fzf) {
 }
 
 # ============================================================================
-# 5. Yazi File Manager Wrapper (allows cwd change)
+# 5. PSReadLine (Inline History Prediction / "ghost text")
+# ============================================================================
+try {
+    Set-PSReadLineOption -PredictionSource History -PredictionViewStyle InlineView
+} catch {
+    # PSReadLine 2.2+ required; silently skip on older installs
+}
+
+# ============================================================================
+# 6. Yazi File Manager Wrapper (allows cwd change)
 # ============================================================================
 if ($ToolsAvailable.yazi) {
     function y {

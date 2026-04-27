@@ -14,7 +14,7 @@
 
 param(
     [Parameter(Mandatory = $true)]
-    [ValidateSet("htb", "tokyo", "matrix", "kanagawa")]
+    [ValidateSet("htb", "tokyo", "matrix", "kanagawa", "ubuntu")]
     [string]$Theme
 )
 
@@ -31,6 +31,7 @@ $themeMap = @{
     "tokyo"    = @{ StarshipSrc = "starship.toml";           SchemeName = "Tokyo Night"  }
     "matrix"   = @{ StarshipSrc = "starship-matrix.toml";   SchemeName = "Matrix"       }
     "kanagawa" = @{ StarshipSrc = "starship-kanagawa.toml"; SchemeName = "Kanagawa"     }
+    "ubuntu"   = @{ StarshipSrc = "starship-ubuntu.toml";   SchemeName = "Ubuntu"       }
 }
 $selected     = $themeMap[$Theme]
 $starshipSrc  = Join-Path $RepoDir "configs\$($selected.StarshipSrc)"
@@ -117,6 +118,7 @@ $themeColor = switch ($Theme) {
     "htb"      { "Green" }
     "matrix"   { "Green" }
     "kanagawa" { "Yellow" }
+    "ubuntu"   { "DarkYellow" }
     default    { "Cyan" }
 }
 Write-Host $schemeName -ForegroundColor $themeColor

@@ -8,7 +8,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **MyPowerShell** is a high-performance PowerShell environment for Windows 11. It enhances the PowerShell experience with modern CLI tools while preserving muscle memory for standard commands.
 
-**Version**: v2.1.0
+**Version**: v2.2.0
 **Repository**: https://github.com/reisset/mypowershell
 **License**: MIT
 
@@ -61,7 +61,7 @@ mypowershell/
 
 ### Visual Enhancements
 - **JetBrainsMono Nerd Font**: Installed via scoop nerd-fonts bucket
-- **Four Themes**: tokyo, htb, matrix, kanagawa — all registered in Windows Terminal on install
+- **Five Themes**: tokyo, htb, matrix, kanagawa, ubuntu — all registered in Windows Terminal on install
 - **OS Icon**: Windows Nerd Font glyph in prompt (`󰍲`, nf-md-windows)
 
 ## Key Design Decisions
@@ -72,7 +72,7 @@ mypowershell/
 4. **Config Overwrites**: Automatic without prompting (for repeatability)
 5. **Yazi Wrapper**: Allows directory changes after exiting file manager
 6. **Deployed Config**: Starship reads from `~\.config\starship.toml`, not the repo copy
-7. **Multi-Theme System**: Four themes (tokyo/htb/matrix/kanagawa) via `theme <name>` alias. Each theme has its own `configs/starship-<name>.toml`. `switch-theme.ps1` deploys the starship config AND syncs the WT color scheme from `configs/windows-terminal.json` (so color edits take effect on next `theme` call without reinstalling). Installer always registers all schemes unconditionally — only theme activation is prompted.
+7. **Multi-Theme System**: Five themes (tokyo/htb/matrix/kanagawa/ubuntu) via `theme <name>` alias. Each theme has its own `configs/starship-<name>.toml`. `switch-theme.ps1` deploys the starship config AND syncs the WT color scheme from `configs/windows-terminal.json` (so color edits take effect on next `theme` call without reinstalling). Installer always registers all schemes unconditionally — only theme activation is prompted.
 
 ## Profile Structure & Architecture
 
@@ -82,8 +82,9 @@ The profile loads in this order:
 2. **Aliases** (`scripts/aliases.ps1`) - Tool shortcuts and functions (uses cached `$ToolsAvailable`)
 3. **Starship** - Prompt initialization (cached init script from `$env:TEMP\mypowershell-starship-init.ps1`)
 4. **Zoxide** - Smart directory navigation (cached init script from `$env:TEMP\mypowershell-zoxide-init.ps1`)
-5. **PSFzf** - Lazy-loaded on Ctrl+R/Ctrl+T
-6. **Yazi Wrapper** - File manager function (if installed)
+5. **PSReadLine** - Inline history prediction (ghost text)
+6. **PSFzf** - Lazy-loaded on Ctrl+R/Ctrl+T
+7. **Yazi Wrapper** - File manager function (if installed)
 
 ### Key Architecture Details
 

@@ -1,6 +1,6 @@
 # scripts/aliases.ps1
 # MyPowerShell Aliases - Modern CLI tool shortcuts
-# Version: 2.1.0
+# Version: 2.2.0
 
 # ============================================================================
 # MODERN TOOL ALIASES (Learning-First Approach)
@@ -63,11 +63,11 @@ if ($ToolsAvailable.zoxide) {
 function theme {
     param(
         [Parameter(Mandatory = $false)]
-        [ValidateSet("htb", "tokyo", "matrix", "kanagawa")]
+        [ValidateSet("htb", "tokyo", "matrix", "kanagawa", "ubuntu")]
         [string]$Name
     )
     if (-not $Name) {
-        Write-Host "Usage: theme <htb|tokyo>" -ForegroundColor Yellow
+        Write-Host "Usage: theme <htb|tokyo|matrix|kanagawa|ubuntu>" -ForegroundColor Yellow
         return
     }
     $switcherPath = Join-Path $MyPowerShellRoot "scripts\switch-theme.ps1"
