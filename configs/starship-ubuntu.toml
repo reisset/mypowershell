@@ -1,0 +1,57 @@
+# Starship Config - Ubuntu Theme
+# Two-line prompt with Ubuntu orange accents
+# Ubuntu brand: #E95420 orange, #300A24 aubergine
+
+format = """
+[┌─](bold #E95420) $os$username in $directory$git_branch$python$cmd_duration
+[└─](bold #E95420)$character"""
+
+add_newline = true
+
+[character]
+success_symbol = "[❯](bold #E95420)"
+error_symbol = "[❯](bold red)"
+
+[os]
+disabled = false
+format = "[$symbol]($style) "
+style = "bold white"
+
+[os.symbols]
+Windows = "󰍲"
+
+[username]
+show_always = true
+format = "[$user]($style)"
+style_user = "bold #E95420"
+
+[directory]
+truncation_length = 3
+truncate_to_repo = true
+style = "bold white"
+read_only = " 󰌾"
+
+[git_branch]
+format = " on [$symbol$branch]($style)"
+symbol = " "
+style = "bold #E95420"
+
+[git_status]
+disabled = true
+
+[python]
+format = '[ $virtualenv]($style)'
+style = "#E95420"
+detect_extensions = []
+detect_files = []
+
+[nodejs]
+disabled = true
+
+[package]
+disabled = true
+
+[cmd_duration]
+min_time = 2000
+format = " took [$duration]($style)"
+style = "bold yellow"

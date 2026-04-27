@@ -5,6 +5,22 @@ All notable changes to MyPowerShell will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.0] - 2026-04-26
+
+### Added
+- **Ubuntu theme**: Authentic Ubuntu GNOME terminal palette — aubergine background (`#300A24`), `#E95420` orange cursor and prompt accents, classic Ubuntu 16-color palette
+  - `configs/starship-ubuntu.toml`: Ubuntu-branded Starship config (orange arrows, white text)
+  - `configs/windows-terminal.json`: Ubuntu color scheme added alongside existing four
+  - `theme ubuntu` alias wired into tab completion and theme map
+- **PSReadLine inline history prediction**: Ghost text suggestions based on command history
+  - Added `Set-PSReadLineOption -PredictionSource History -PredictionViewStyle InlineView` to profile
+  - Press `→` or `End` to accept a suggestion; just keep typing to ignore it
+  - Requires PSReadLine 2.2+ (silently skipped on older installs)
+
+### Changed
+- `theme` alias ValidateSet updated to include `ubuntu` (5 themes total)
+- `switch-theme.ps1` ValidateSet and theme map updated to include `ubuntu`
+
 ## [2.1.0] - 2026-03-16
 
 ### Added
