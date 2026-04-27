@@ -415,7 +415,7 @@ if ($wtSettingsPath) {
         }
 
         # Save after registering schemes
-        $wtSettings | ConvertTo-Json -Depth 10 | Set-Content $wtSettingsPath.FullName -Force
+        $wtSettings | ConvertTo-Json -Depth 10 | Set-Content $wtSettingsPath.FullName -Encoding UTF8 -Force
 
         # Ask which theme to activate
         $activeTheme = Select-Theme "Which theme would you like to activate?"
@@ -448,7 +448,7 @@ if ($wtSettingsPath) {
             $wtSettings.profiles.defaults | Add-Member -MemberType NoteProperty -Name "padding" -Value "10" -Force
 
             # Save settings
-            $wtSettings | ConvertTo-Json -Depth 10 | Set-Content $wtSettingsPath.FullName -Force
+            $wtSettings | ConvertTo-Json -Depth 10 | Set-Content $wtSettingsPath.FullName -Encoding UTF8 -Force
             Write-Status "Windows Terminal activated: $schemeName" -Type Success
         } else {
             Write-Status "Skipping theme activation (use 'theme htb' or 'theme tokyo' anytime to switch)" -Type Info
@@ -476,8 +476,15 @@ if (-not (Test-Path $configDir)) {
     Write-Status "Created $configDir" -Type Success
 }
 
-# Copy starship.toml (overwrite if exists)
-$starshipSource = Join-Path $RepoDir "configs\starship.toml"
+# Copy the starship config for the selected theme (falls back to tokyo/default)
+$starshipFileMap = @{
+    "htb"      = "starship-htb.toml"
+    "matrix"   = "starship-matrix.toml"
+    "kanagawa" = "starship-kanagawa.toml"
+    "ubuntu"   = "starship-ubuntu.toml"
+}
+$starshipFile = if ($starshipFileMap.ContainsKey($activeTheme)) { $starshipFileMap[$activeTheme] } else { "starship.toml" }
+$starshipSource = Join-Path $RepoDir "configs\$starshipFile"
 $starshipDest = Join-Path $configDir "starship.toml"
 
 Copy-Item $starshipSource $starshipDest -Force

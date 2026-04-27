@@ -119,7 +119,8 @@ Log-Info "Step 3: Removing cached init scripts"
 
 $cacheFiles = @(
     "$env:TEMP\mypowershell-starship-init.ps1",
-    "$env:TEMP\mypowershell-zoxide-init.ps1"
+    "$env:TEMP\mypowershell-zoxide-init.ps1",
+    "$env:TEMP\mypowershell-tools.json"
 )
 
 $removedCount = 0
@@ -152,17 +153,20 @@ $wtSettingsPath = Get-ChildItem "$env:LOCALAPPDATA\Packages\Microsoft.WindowsTer
 if ($wtSettingsPath -and (Test-Path $wtSettingsPath)) {
     Log-Info "Found Windows Terminal settings: $wtSettingsPath"
 
-    if (Confirm "Remove Tokyo Night theme from Windows Terminal?") {
+    if (Confirm "Remove MyPowerShell themes from Windows Terminal?") {
         try {
             $wtSettings = Get-Content $wtSettingsPath -Raw | ConvertFrom-Json
             $modified = $false
 
-            # Remove Tokyo Night scheme from schemes array
+            $mypsSchemes = @("Tokyo Night", "Hack The Box", "Matrix", "Kanagawa", "Ubuntu")
+
+            # Remove all MyPowerShell schemes from schemes array
             if ($wtSettings.schemes) {
                 $originalCount = $wtSettings.schemes.Count
-                $wtSettings.schemes = @($wtSettings.schemes | Where-Object { $_.name -ne "Tokyo Night" })
-                if ($wtSettings.schemes.Count -lt $originalCount) {
-                    Log-Info "Removed Tokyo Night color scheme"
+                $wtSettings.schemes = @($wtSettings.schemes | Where-Object { $_.name -notin $mypsSchemes })
+                $removedCount = $originalCount - $wtSettings.schemes.Count
+                if ($removedCount -gt 0) {
+                    Log-Info "Removed $removedCount MyPowerShell color scheme(s)"
                     $modified = $true
                 }
             }
@@ -172,7 +176,7 @@ if ($wtSettingsPath -and (Test-Path $wtSettingsPath)) {
                 $defaults = $wtSettings.profiles.defaults
                 $removed = @()
 
-                if ($defaults.colorScheme -eq "Tokyo Night") {
+                if ($defaults.colorScheme -in $mypsSchemes) {
                     $defaults.PSObject.Properties.Remove('colorScheme')
                     $removed += "colorScheme"
                 }
