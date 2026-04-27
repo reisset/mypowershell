@@ -6,7 +6,7 @@
     Installs modern CLI tools and configurations inspired by MyBash for Linux.
     Installs core CLI tools (starship, zoxide, fzf, eza, bat, fd, ripgrep) with multi-theme support
 .NOTES
-    Version: 2.1.0
+    Version: 2.2.0
     No administrator privileges required
 #>
 
@@ -75,14 +75,16 @@ function Select-Theme {
     Write-Host "  [2] Hack The Box" -ForegroundColor White
     Write-Host "  [3] Matrix" -ForegroundColor White
     Write-Host "  [4] Kanagawa" -ForegroundColor White
-    Write-Host "  [5] Skip" -ForegroundColor Gray
+    Write-Host "  [5] Ubuntu" -ForegroundColor White
+    Write-Host "  [6] Skip" -ForegroundColor Gray
     $response = Read-Host "Choose [1]"
 
     switch ($response.Trim()) {
         "2"     { return "htb" }
         "3"     { return "matrix" }
         "4"     { return "kanagawa" }
-        "5"     { return "none" }
+        "5"     { return "ubuntu" }
+        "6"     { return "none" }
         default { return "tokyo" }
     }
 }
@@ -314,12 +316,20 @@ Write-Host ""
 Write-Status "Installing PowerShell modules..." -Type Info
 
 $modules = @(
-    @{Name = "PSFzf"; Description = "FZF integration for PowerShell (Ctrl+R, Ctrl+T)" }
+    @{Name = "PSReadLine"; MinVersion = "2.2.0"; Description = "Enhanced readline with inline history prediction (ghost text)" },
+    @{Name = "PSFzf";      MinVersion = $null;   Description = "FZF integration for PowerShell (Ctrl+R, Ctrl+T)" }
 )
 
 foreach ($module in $modules) {
-    if (Get-Module -ListAvailable -Name $module.Name) {
-        Write-Status "$($module.Name) is already installed" -Type Success
+    $installed = Get-Module -ListAvailable -Name $module.Name | Sort-Object Version -Descending | Select-Object -First 1
+    $needsInstall = -not $installed
+    if ($installed -and $module.MinVersion -and $installed.Version -lt [Version]$module.MinVersion) {
+        Write-Status "$($module.Name) $($installed.Version) installed but $($module.MinVersion)+ required — upgrading..." -Type Warning
+        $needsInstall = $true
+    }
+
+    if (-not $needsInstall) {
+        Write-Status "$($module.Name) $($installed.Version) is already installed" -Type Success
     } else {
         Write-Status "Installing $($module.Name)..." -Type Info
         try {
@@ -415,6 +425,7 @@ if ($wtSettingsPath) {
                 "htb"      { "Hack The Box" }
                 "matrix"   { "Matrix" }
                 "kanagawa" { "Kanagawa" }
+                "ubuntu"   { "Ubuntu" }
                 default    { "Tokyo Night" }
             }
 
