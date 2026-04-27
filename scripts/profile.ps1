@@ -153,10 +153,9 @@ if ($ToolsAvailable.fzf) {
 # ============================================================================
 # 5. PSReadLine (Inline History Prediction / "ghost text")
 # ============================================================================
-try {
+$psrlVersion = (Get-Module PSReadLine -ErrorAction SilentlyContinue).Version
+if ($psrlVersion -ge [Version]"2.2.0") {
     Set-PSReadLineOption -PredictionSource History -PredictionViewStyle InlineView
-} catch {
-    # PSReadLine 2.2+ required; silently skip on older installs
 }
 
 # ============================================================================
