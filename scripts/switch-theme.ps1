@@ -3,13 +3,14 @@
 .SYNOPSIS
     MyPowerShell Theme Switcher
 .DESCRIPTION
-    Switches between "tokyo" (Tokyo Night) and "htb" (Hack The Box) themes.
+    Switches between tokyo, htb, matrix, kanagawa, and ubuntu themes.
     Updates both starship.toml and Windows Terminal colorScheme without reinstalling.
 .PARAMETER Theme
-    The theme to activate: "htb" or "tokyo"
+    The theme to activate: "tokyo", "htb", "matrix", "kanagawa", or "ubuntu"
 .EXAMPLE
-    theme htb
     theme tokyo
+    theme htb
+    theme matrix
 #>
 
 param(
@@ -91,7 +92,7 @@ if (-not $wtSettingsPath) {
                 $wtSettings.profiles | Add-Member -MemberType NoteProperty -Name "defaults" -Value ([PSCustomObject]@{}) -Force
             }
             $wtSettings.profiles.defaults | Add-Member -MemberType NoteProperty -Name "colorScheme" -Value $schemeName -Force
-            $wtSettings | ConvertTo-Json -Depth 10 | Set-Content $wtSettingsPath.FullName -Force
+            $wtSettings | ConvertTo-Json -Depth 10 | Set-Content $wtSettingsPath.FullName -Encoding UTF8 -Force
             Write-Status "Windows Terminal colorScheme set to '$schemeName'" -Type Success
         }
     } catch {
